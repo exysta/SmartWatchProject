@@ -1,23 +1,25 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
+#include "i2c.h"
 #include "memorymap.h"
 #include "usart.h"
 #include "gpio.h"
@@ -25,7 +27,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-
+#include "bmp280.h"
+#include "GNSS.h"
+#include "stm32h7xx_hal.h"
+#include <string.h>         // For memset(), strlen(), sprintf()
+#include <stdio.h>          // For printf() (if using debugging via UART)
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +41,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BLE_TEST
+//#define BME280
+//#define GPS_TEST
+#define BME280_ADDR 0x76
+#define RX_BUFFER_SIZE 256
 
 /* USER CODE END PD */
 
@@ -46,7 +57,18 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+BMP280_HandleTypedef bmp280;
+float pressure, temperature, humidity;
 
+uint16_t size;
+uint8_t Data[256];
+
+GNSS_StateHandle GNSS_Handle;
+
+uint8_t rxBuffer[RX_BUFFER_SIZE];
+volatile uint16_t rxPos = 0;
+char messageBuffer[RX_BUFFER_SIZE];
+volatile uint8_t messageReady = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,27 +119,160 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_UART4_Init();
   MX_USART3_UART_Init();
+  MX_I2C2_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t txData[] = "AT+NAMESmartProject\r\n";  // Command to send
-  uint8_t rxData[10];           // Buffer to store response
-  //HAL_UART_Transmit(&huart4, txData, sizeof(txData) - 1, 100);  // Send "AT"
-  //HAL_UART_Receive(&huart4, rxData, sizeof(rxData), 100);       // Read response
 
-  printf("Received: %s\r\n", rxData);  // Print response
+#ifdef BLE_TEST
 
+  // Function to send AT command and receive response
+  void sendATCommand(UART_HandleTypeDef *huart, char *command) {
+      uint8_t txBuffer[100];
+      uint8_t rxBuffer[100];
+
+      // Préparer la commande
+      sprintf((char*)txBuffer, "%s\r\n", command);
+
+      // Vider le buffer de réception
+      HAL_UART_AbortReceive(huart);
+      memset(rxBuffer, 0, sizeof(rxBuffer));
+
+      // Envoyer la commande
+      HAL_UART_Transmit(huart, txBuffer, strlen((char*)txBuffer), 300);
+
+
+      // Réception avec timeout étendu
+      HAL_UART_Receive(huart, rxBuffer, sizeof(rxBuffer), 2000);
+
+      printf("Received: %s\r\n", rxBuffer);
+      HAL_Delay(1500);
+  }
+
+  void configureHM10() {
+	  sendATCommand(&huart4, "AT");          // Basic test - should return "OK"
+//	  // First connect at current baud rate (likely 9600)
+//	  sendATCommand(&huart4, "AT+VERSION");  // Get firmware version
+//	  sendATCommand(&huart4, "AT+LADDR");    // Get Bluetooth MAC address
+//	  sendATCommand(&huart4, "AT+NAMESmartProject");     // Check current device name
+//	  sendATCommand(&huart4, "AT+ROLE0");    // Set to slave mode
+//	  sendATCommand(&huart4, "AT+ADVI0");    // Set to 100ms for quick discovery
+
+  }
+  // Start DMA reception with idle line detection
+  void startUartReception(UART_HandleTypeDef *huart)
+  {
+      HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
+      // Optionally disable half-transfer interrupt to reduce overhead
+      __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+  }
+
+
+  printf("--------------------------\r\n");
+
+
+  configureHM10();
+  startUartReception(&huart4);
+#endif
+
+#ifdef BME280
+	uint8_t txData = 0xD0;  // Array with a single element
+	// Command to send
+	uint8_t rxData[1];           // Buffer to store response
+
+	HAL_I2C_Master_Transmit(&hi2c2, BME280_ADDR, &txData, 1, 100);
+	HAL_StatusTypeDef status = HAL_I2C_Master_Receive(&hi2c2, BME280_ADDR, rxData, 1, 100);
+	printf("Received: 0x%02X \r\n", rxData[0]);  // Print response
+
+
+	bmp280_init_default_params(&bmp280.params);
+	bmp280.addr = BMP280_I2C_ADDRESS_0;
+	bmp280.i2c = &hi2c2;
+
+	while (!bmp280_init(&bmp280, &bmp280.params)) {
+		size = sprintf((char *)Data, "BMP280 initialization failed\r\n");
+		HAL_UART_Transmit(&huart3, Data, size, 1000);
+		HAL_Delay(2000);
+	}
+	bool bme280p = bmp280.id == BME280_CHIP_ID;
+	size = sprintf((char *)Data, "BMP280: found %s \r\n", bme280p ? "BME280" : "BMP280");
+	HAL_UART_Transmit(&huart3, Data, size, 1000);
+#endif
+
+#ifdef GPS_TEST
+	GNSS_Init(&GNSS_Handle, &huart5);
+	HAL_Delay(1000);
+	GNSS_LoadConfig(&GNSS_Handle);
+	uint32_t Timer = HAL_GetTick();
+#endif
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	while (1)
+	{
+#ifdef BME280
+
+		HAL_Delay(100);
+
+		while (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity)) {
+			printf("Temperature/pressure reading failed\r\n");
+			HAL_Delay(2000);
+		}
+
+		printf("Pressure: %.2f Pa, Temperature: %.2f C \r\n", pressure, temperature);
+
+		if (bme280p) {
+			printf(", Humidity: %.2f\r\n", humidity);
+		} else {
+			printf("\r\n");
+		}
+
+		HAL_Delay(2000);
+#endif
+
+
+#ifdef GPS_TEST
+		if ((HAL_GetTick() - Timer) > 1000) {
+			GNSS_GetUniqID(&GNSS_Handle);
+			GNSS_ParseBuffer(&GNSS_Handle);
+			HAL_Delay(250);
+			GNSS_GetPVTData(&GNSS_Handle);
+			GNSS_ParseBuffer(&GNSS_Handle);
+			HAL_Delay(250);
+			GNSS_SetMode(&GNSS_Handle,Automotiv);
+			HAL_Delay(250);
+			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
+			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
+			printf("Status of fix: %d \r\n", GNSS_Handle.fixType);
+			printf("Latitude: %f \r\n", GNSS_Handle.fLat);
+			printf("Longitude: %f \r\n",(float) GNSS_Handle.lon / 10000000.0);
+			printf("Height above ellipsoid: %d \r\n", GNSS_Handle.height);
+			printf("Height above mean sea level: %d \r\n", GNSS_Handle.hMSL);
+			printf("Ground Speed (2-D): %d \r\n", GNSS_Handle.gSpeed);
+			printf("Unique ID: %04X %04X %04X %04X %04X \n\r",
+					GNSS_Handle.uniqueID[0], GNSS_Handle.uniqueID[1],
+					GNSS_Handle.uniqueID[2], GNSS_Handle.uniqueID[3],
+					GNSS_Handle.uniqueID[4], GNSS_Handle.uniqueID[5]);
+			printf("--------------------------------------\r\n" );
+			Timer = HAL_GetTick();
+		}
+#endif
+#ifdef BLE_TEST
+        if (messageReady) {
+            // Process the complete message
+            printf("Received complete message: %s\r\n", messageBuffer);
+            messageReady = 0;
+        }
+#endif
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 
@@ -183,7 +338,27 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+// This callback is called when idle line is detected or buffer is full
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+    if (huart->Instance == UART4)
+    {
+        // Copy the data from DMA buffer to message buffer
+        memcpy(messageBuffer, rxBuffer, Size);
 
+        // Null-terminate the string
+        messageBuffer[Size] = '\0';
+
+        // Set flag for main loop
+        messageReady = 1;
+
+        HAL_UART_AbortReceive(huart);  // Stop DMA
+        memset(rxBuffer, 0, sizeof(rxBuffer));  // Reset buffer
+
+        // Restart DMA reception
+        HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
+        __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+    }
+}
 /* USER CODE END 4 */
 
  /* MPU Configuration */
@@ -222,11 +397,11 @@ void MPU_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1)
+	{
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -241,7 +416,7 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
+	/* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
