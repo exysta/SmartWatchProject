@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Mayane_librairie")(type "KiCad")(uri "${KIPRJMOD}/Mayane_librairie.pretty")(options "")(descr ""))
+  (lib (name "LIB_1-826629-2")(type "KiCad")(uri "C:/Users/33677/Downloads/LIB_1-826629-2.pretty")(options "")(descr ""))
+)

@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Mayane_librairie")(type "KiCad")(uri "${KIPRJMOD}/Mayane_librairie.kicad_sym")(options "")(descr ""))
+)
