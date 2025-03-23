@@ -1,9 +1,6 @@
-../Core/Src/main.c:83:5:__io_putchar	1
-../Core/Src/main.c:132:8:sendATCommand	1
-../Core/Src/main.c:94:5:main	2
-../Core/Src/main.c:154:8:configureHM10	1
-../Core/Src/main.c:165:8:startUartReception	17
-../Core/Src/main.c:283:6:SystemClock_Config	4
-../Core/Src/main.c:342:6:HAL_UARTEx_RxEventCallback	18
-../Core/Src/main.c:366:6:MPU_Config	1
-../Core/Src/main.c:397:6:Error_Handler	1
+../Core/Src/main.c:88:5:__io_putchar	1
+../Core/Src/main.c:99:5:main	1
+../Core/Src/main.c:301:6:SystemClock_Config	4
+../Core/Src/main.c:360:6:HAL_UARTEx_RxEventCallback	18
+../Core/Src/main.c:384:6:MPU_Config	1
+../Core/Src/main.c:415:6:Error_Handler	1

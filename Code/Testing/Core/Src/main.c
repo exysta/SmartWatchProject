@@ -21,6 +21,7 @@
 #include "dma.h"
 #include "i2c.h"
 #include "memorymap.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -32,6 +33,9 @@
 #include "stm32h7xx_hal.h"
 #include <string.h>         // For memset(), strlen(), sprintf()
 #include <stdio.h>          // For printf() (if using debugging via UART)
+#include <st7789.h>
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +45,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define BLE_TEST
+//#define BLE_TEST
+#define SCREEN_TEST
 //#define BME280
 //#define GPS_TEST
 #define BME280_ADDR 0x76
@@ -124,6 +129,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_I2C2_Init();
   MX_UART5_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
 #ifdef BLE_TEST
@@ -208,6 +214,11 @@ int main(void)
 	uint32_t Timer = HAL_GetTick();
 #endif
 
+#ifdef SCREEN_TEST
+	ST7789_Init();
+
+#endif
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -267,6 +278,13 @@ int main(void)
             printf("Received complete message: %s\r\n", messageBuffer);
             messageReady = 0;
         }
+#endif
+
+#ifdef SCREEN_TEST
+        ST7789_Fill_Color(BLACK);
+    	ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
+		HAL_Delay(4000);
+
 #endif
 
     /* USER CODE END WHILE */

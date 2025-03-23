@@ -75,6 +75,12 @@ void Error_Handler(void);
 #define STLINK_RX_GPIO_Port GPIOD
 #define STLINK_TX_Pin GPIO_PIN_9
 #define STLINK_TX_GPIO_Port GPIOD
+#define ST7789_DC_Pin GPIO_PIN_14
+#define ST7789_DC_GPIO_Port GPIOD
+#define ST7789_RST_Pin GPIO_PIN_15
+#define ST7789_RST_GPIO_Port GPIOD
+#define ST7789_CS_Pin GPIO_PIN_9
+#define ST7789_CS_GPIO_Port GPIOG
 #define LD2_Pin GPIO_PIN_1
 #define LD2_GPIO_Port GPIOE
 
