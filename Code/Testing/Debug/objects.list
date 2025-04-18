@@ -1,4 +1,5 @@
 "./Core/Src/GNSS.o"
+"./Core/Src/MPU6500_driver.o"
 "./Core/Src/bmp280.o"
 "./Core/Src/dma.o"
 "./Core/Src/fonts.o"

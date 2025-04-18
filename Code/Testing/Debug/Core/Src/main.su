@@ -1,7 +1,8 @@
-../Core/Src/main.c:93:5:__io_putchar	16	static
-../Core/Src/main.c:228:10:MPU6500_ReadWhoAmI	40	static
-../Core/Src/main.c:104:5:main	16	static
-../Core/Src/main.c:316:6:SystemClock_Config	120	static
-../Core/Src/main.c:375:6:HAL_UARTEx_RxEventCallback	16	static
-../Core/Src/main.c:399:6:MPU_Config	24	static
-../Core/Src/main.c:430:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:94:5:__io_putchar	16	static
+../Core/Src/main.c:231:10:MPU6500_ReadWhoAmI	40	static
+../Core/Src/main.c:105:5:main	16	static
+../Core/Src/main.c:241:7:read_mpu_data_example	408	static
+../Core/Src/main.c:359:6:SystemClock_Config	120	static
+../Core/Src/main.c:418:6:HAL_UARTEx_RxEventCallback	16	static
+../Core/Src/main.c:442:6:MPU_Config	24	static
+../Core/Src/main.c:473:6:Error_Handler	4	static,ignoring_inline_asm

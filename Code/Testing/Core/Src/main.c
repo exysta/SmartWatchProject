@@ -34,6 +34,7 @@
 #include <string.h>         // For memset(), strlen(), sprintf()
 #include <stdio.h>          // For printf() (if using debugging via UART)
 #include <st7789.h>
+#include "MPU6500_driver.h"
 
 
 /* USER CODE END Includes */
@@ -54,7 +55,7 @@
 #define RX_BUFFER_SIZE 256
 
 #define MPU6500_I2C            hi2c4
-#define MPU6500_ADDR           (0x68 << 1)  // Shifted left for HAL compatibility
+#define MPU6500_I2C_ADDR_SHIFTED            (0x68 << 1)  // Shifted left for HAL compatibility
 #define MPU6500_RGSTR_WHO_AM_I 0x75
 
 /* USER CODE END PD */
@@ -225,13 +226,48 @@ int main(void)
 #endif
 
 #ifdef MPU6500_TEST
-	uint8_t MPU6500_ReadWhoAmI(void) {
+
+	/* WHO_AM_I read */
+	uint8_t MPU6500_ReadWhoAmI(void)
+	{
 	    uint8_t who_am_i = 0;
-	    HAL_I2C_Mem_Read(&MPU6500_I2C, MPU6500_ADDR, MPU6500_RGSTR_WHO_AM_I,
+	    HAL_I2C_Mem_Read(&MPU6500_I2C, MPU6500_I2C_ADDR_SHIFTED, MPU6500_RGSTR_WHO_AM_I,
 	                     I2C_MEMADD_SIZE_8BIT, &who_am_i, 1, HAL_MAX_DELAY);
 	    return who_am_i;
 	}
-	MPU6500_ReadWhoAmI();
+
+	/* Read values */
+
+	void read_mpu_data_example() {
+	    #define MAX_SAMPLES 10 // Max samples to read in one go (especially for FIFO)
+	    int16_t accel_raw[MAX_SAMPLES][3];
+	    float   accel_g[MAX_SAMPLES][3];
+	    int16_t gyro_raw[MAX_SAMPLES][3];
+	    float   gyro_dps[MAX_SAMPLES][3];
+	    uint16_t samples_read = MAX_SAMPLES; // Request up to MAX_SAMPLES
+	    uint8_t status;
+	    int i;
+
+	    status = mpu6500_read_hal(&MPU6500_I2C, MPU6500_I2C_ADDR_SHIFTED, HAL_MAX_DELAY,
+	                              accel_raw, accel_g, gyro_raw, gyro_dps, &samples_read);
+
+	    if (status == MPU6500_OK) {
+	        printf("Read %u samples successfully.\r\n", samples_read);
+	        for (i = 0; i < samples_read; i++) {
+	            printf("Sample %d:\r\n", i);
+	            printf("  Accel Raw:  X=%d, Y=%d, Z=%d\r\n", accel_raw[i][0], accel_raw[i][1], accel_raw[i][2]);
+	            printf("  Accel (g):  X=%.3f, Y=%.3f, Z=%.3f\r\n", accel_g[i][0], accel_g[i][1], accel_g[i][2]);
+	            printf("  Gyro Raw:   X=%d, Y=%d, Z=%d\r\n", gyro_raw[i][0], gyro_raw[i][1], gyro_raw[i][2]);
+	            printf("  Gyro (dps): X=%.2f, Y=%.2f, Z=%.2f\r\n", gyro_dps[i][0], gyro_dps[i][1], gyro_dps[i][2]);
+	        }
+	    } else {
+	        printf("MPU6500 read failed with status: %u\r\n", status);
+	    }
+	}
+
+    uint8_t id = MPU6500_ReadWhoAmI();
+    printf("mpu6500: WHO_AM_I = 0x%02X\r\n", id);
+
 #endif
 
   /* USER CODE END 2 */
@@ -299,6 +335,13 @@ int main(void)
         ST7789_Fill_Color(BLACK);
     	ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
 		HAL_Delay(4000);
+
+#endif
+
+#ifdef MPU6500_TEST
+	    read_mpu_data_example();
+	    printf("===================================\r\n");
+		HAL_Delay(1000);
 
 #endif
 
