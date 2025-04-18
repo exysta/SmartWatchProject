@@ -46,11 +46,16 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 //#define BLE_TEST
-#define SCREEN_TEST
+//#define SCREEN_TEST
 //#define BME280
 //#define GPS_TEST
+#define MPU6500_TEST
 #define BME280_ADDR 0x76
 #define RX_BUFFER_SIZE 256
+
+#define MPU6500_I2C            hi2c4
+#define MPU6500_ADDR           (0x68 << 1)  // Shifted left for HAL compatibility
+#define MPU6500_RGSTR_WHO_AM_I 0x75
 
 /* USER CODE END PD */
 
@@ -130,6 +135,7 @@ int main(void)
   MX_I2C2_Init();
   MX_UART5_Init();
   MX_SPI1_Init();
+  MX_I2C4_Init();
   /* USER CODE BEGIN 2 */
 
 #ifdef BLE_TEST
@@ -216,7 +222,16 @@ int main(void)
 
 #ifdef SCREEN_TEST
 	ST7789_Init();
+#endif
 
+#ifdef MPU6500_TEST
+	uint8_t MPU6500_ReadWhoAmI(void) {
+	    uint8_t who_am_i = 0;
+	    HAL_I2C_Mem_Read(&MPU6500_I2C, MPU6500_ADDR, MPU6500_RGSTR_WHO_AM_I,
+	                     I2C_MEMADD_SIZE_8BIT, &who_am_i, 1, HAL_MAX_DELAY);
+	    return who_am_i;
+	}
+	MPU6500_ReadWhoAmI();
 #endif
 
   /* USER CODE END 2 */

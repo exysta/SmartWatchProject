@@ -1,6 +1,7 @@
-../Core/Src/main.c:88:5:__io_putchar	1
-../Core/Src/main.c:99:5:main	1
-../Core/Src/main.c:301:6:SystemClock_Config	4
-../Core/Src/main.c:360:6:HAL_UARTEx_RxEventCallback	18
-../Core/Src/main.c:384:6:MPU_Config	1
-../Core/Src/main.c:415:6:Error_Handler	1
+../Core/Src/main.c:93:5:__io_putchar	1
+../Core/Src/main.c:228:10:MPU6500_ReadWhoAmI	1
+../Core/Src/main.c:104:5:main	1
+../Core/Src/main.c:316:6:SystemClock_Config	4
+../Core/Src/main.c:375:6:HAL_UARTEx_RxEventCallback	18
+../Core/Src/main.c:399:6:MPU_Config	1
+../Core/Src/main.c:430:6:Error_Handler	1

@@ -67,6 +67,8 @@ void Error_Handler(void);
 #define PH0_MCU_GPIO_Port GPIOH
 #define PH1_MCU_Pin GPIO_PIN_1
 #define PH1_MCU_GPIO_Port GPIOH
+#define MPU6500_AD0_Pin GPIO_PIN_3
+#define MPU6500_AD0_GPIO_Port GPIOA
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
@@ -75,6 +77,10 @@ void Error_Handler(void);
 #define STLINK_RX_GPIO_Port GPIOD
 #define STLINK_TX_Pin GPIO_PIN_9
 #define STLINK_TX_GPIO_Port GPIOD
+#define MPU6500_SCL_Pin GPIO_PIN_12
+#define MPU6500_SCL_GPIO_Port GPIOD
+#define MPU6500_SDA_Pin GPIO_PIN_13
+#define MPU6500_SDA_GPIO_Port GPIOD
 #define ST7789_DC_Pin GPIO_PIN_14
 #define ST7789_DC_GPIO_Port GPIOD
 #define ST7789_RST_Pin GPIO_PIN_15
