@@ -1,0 +1,2 @@
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:222:6:split_color_array	32	static
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:229:6:Display_DrawHeart	6440	static

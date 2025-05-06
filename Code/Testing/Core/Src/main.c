@@ -27,7 +27,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
 #include "bmp280.h"
 #include "GNSS.h"
 #include "stm32h7xx_hal.h"
@@ -35,6 +34,9 @@
 #include <stdio.h>          // For printf() (if using debugging via UART)
 #include <st7789.h>
 #include "MPU6500_driver.h"
+#include "ble_comms.h"
+#include "common_defs.h"
+#include "display.h"
 
 
 /* USER CODE END Includes */
@@ -46,17 +48,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define BLE_TEST
-//#define SCREEN_TEST
-//#define BME280
-//#define GPS_TEST
-#define MPU6500_TEST
-#define BME280_ADDR 0x76
-#define RX_BUFFER_SIZE 256
 
-#define MPU6500_I2C            hi2c4
-#define MPU6500_I2C_ADDR_SHIFTED            (0x68 << 1)  // Shifted left for HAL compatibility
-#define MPU6500_RGSTR_WHO_AM_I 0x75
+
 
 /* USER CODE END PD */
 
@@ -76,10 +69,11 @@ uint8_t Data[256];
 
 GNSS_StateHandle GNSS_Handle;
 
-uint8_t rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxPos = 0;
 char messageBuffer[RX_BUFFER_SIZE];
 volatile uint8_t messageReady = 0;
+extern uint8_t rxBuffer[RX_BUFFER_SIZE];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,7 +87,7 @@ static void MPU_Config(void);
 /* USER CODE BEGIN 0 */
 int __io_putchar(int chr)
 {
-	HAL_UART_Transmit(&huart3, (uint8_t*)&chr, 1, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&STLINK_UART, (uint8_t*)&chr, 1, HAL_MAX_DELAY);
 	return chr;
 }
 /* USER CODE END 0 */
@@ -141,53 +135,8 @@ int main(void)
 
 #ifdef BLE_TEST
 
-  // Function to send AT command and receive response
-  void sendATCommand(UART_HandleTypeDef *huart, char *command) {
-      uint8_t txBuffer[100];
-      uint8_t rxBuffer[100];
-
-      // Préparer la commande
-      sprintf((char*)txBuffer, "%s\r\n", command);
-
-      // Vider le buffer de réception
-      HAL_UART_AbortReceive(huart);
-      memset(rxBuffer, 0, sizeof(rxBuffer));
-
-      // Envoyer la commande
-      HAL_UART_Transmit(huart, txBuffer, strlen((char*)txBuffer), 300);
-
-
-      // Réception avec timeout étendu
-      HAL_UART_Receive(huart, rxBuffer, sizeof(rxBuffer), 2000);
-
-      printf("Received: %s\r\n", rxBuffer);
-      HAL_Delay(1500);
-  }
-
-  void configureHM10() {
-	  sendATCommand(&huart4, "AT");          // Basic test - should return "OK"
-//	  // First connect at current baud rate (likely 9600)
-//	  sendATCommand(&huart4, "AT+VERSION");  // Get firmware version
-//	  sendATCommand(&huart4, "AT+LADDR");    // Get Bluetooth MAC address
-//	  sendATCommand(&huart4, "AT+NAMESmartProject");     // Check current device name
-//	  sendATCommand(&huart4, "AT+ROLE0");    // Set to slave mode
-//	  sendATCommand(&huart4, "AT+ADVI0");    // Set to 100ms for quick discovery
-
-  }
-  // Start DMA reception with idle line detection
-  void startUartReception(UART_HandleTypeDef *huart)
-  {
-      HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
-      // Optionally disable half-transfer interrupt to reduce overhead
-      __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
-  }
-
-
-  printf("--------------------------\r\n");
-
-
   configureHM10();
-  startUartReception(&huart4);
+  startUartReception(&BLE_UART);
 #endif
 
 #ifdef BME280
@@ -195,14 +144,14 @@ int main(void)
 	// Command to send
 	uint8_t rxData[1];           // Buffer to store response
 
-	HAL_I2C_Master_Transmit(&hi2c2, BME280_ADDR, &txData, 1, 100);
-	HAL_StatusTypeDef status = HAL_I2C_Master_Receive(&hi2c2, BME280_ADDR, rxData, 1, 100);
+	HAL_I2C_Master_Transmit(&BME280_I2C, BME280_ADDR, &txData, 1, 100);
+	HAL_StatusTypeDef status = HAL_I2C_Master_Receive(&BME280_I2C, BME280_ADDR, rxData, 1, 100);
 	printf("Received: 0x%02X \r\n", rxData[0]);  // Print response
 
 
 	bmp280_init_default_params(&bmp280.params);
 	bmp280.addr = BMP280_I2C_ADDRESS_0;
-	bmp280.i2c = &hi2c2;
+	bmp280.i2c = &BME280_I2C;
 
 	while (!bmp280_init(&bmp280, &bmp280.params)) {
 		size = sprintf((char *)Data, "BMP280 initialization failed\r\n");
@@ -215,7 +164,7 @@ int main(void)
 #endif
 
 #ifdef GPS_TEST
-	GNSS_Init(&GNSS_Handle, &huart5);
+	GNSS_Init(&GNSS_Handle, &GNSS_UART);
 	HAL_Delay(1000);
 	GNSS_LoadConfig(&GNSS_Handle);
 	uint32_t Timer = HAL_GetTick();
@@ -238,32 +187,7 @@ int main(void)
 
 	/* Read values */
 
-	void read_mpu_data_example() {
-	    #define MAX_SAMPLES 10 // Max samples to read in one go (especially for FIFO)
-	    int16_t accel_raw[MAX_SAMPLES][3];
-	    float   accel_g[MAX_SAMPLES][3];
-	    int16_t gyro_raw[MAX_SAMPLES][3];
-	    float   gyro_dps[MAX_SAMPLES][3];
-	    uint16_t samples_read = MAX_SAMPLES; // Request up to MAX_SAMPLES
-	    uint8_t status;
-	    int i;
 
-	    status = mpu6500_read_hal(&MPU6500_I2C, MPU6500_I2C_ADDR_SHIFTED, HAL_MAX_DELAY,
-	                              accel_raw, accel_g, gyro_raw, gyro_dps, &samples_read);
-
-	    if (status == MPU6500_OK) {
-	        printf("Read %u samples successfully.\r\n", samples_read);
-	        for (i = 0; i < samples_read; i++) {
-	            printf("Sample %d:\r\n", i);
-	            printf("  Accel Raw:  X=%d, Y=%d, Z=%d\r\n", accel_raw[i][0], accel_raw[i][1], accel_raw[i][2]);
-	            printf("  Accel (g):  X=%.3f, Y=%.3f, Z=%.3f\r\n", accel_g[i][0], accel_g[i][1], accel_g[i][2]);
-	            printf("  Gyro Raw:   X=%d, Y=%d, Z=%d\r\n", gyro_raw[i][0], gyro_raw[i][1], gyro_raw[i][2]);
-	            printf("  Gyro (dps): X=%.2f, Y=%.2f, Z=%.2f\r\n", gyro_dps[i][0], gyro_dps[i][1], gyro_dps[i][2]);
-	        }
-	    } else {
-	        printf("MPU6500 read failed with status: %u\r\n", status);
-	    }
-	}
 
     uint8_t id = MPU6500_ReadWhoAmI();
     printf("mpu6500: WHO_AM_I = 0x%02X\r\n", id);
@@ -332,8 +256,15 @@ int main(void)
 #endif
 
 #ifdef SCREEN_TEST
-        ST7789_Fill_Color(BLACK);
-    	ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
+//        ST7789_Fill_Color(BLACK);
+//    	//ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
+////    	ST7789_DrawCircle(150,85,50,GREEN);
+////    	ST7789_DrawCircle(150,85,51,GREEN);
+    	//ST7789_DrawCircle(150,85,52,RED);
+//		HAL_Delay(1000);
+//
+        Display_DrawHeart(160,85);
+
 		HAL_Delay(4000);
 
 #endif
