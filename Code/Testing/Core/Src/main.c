@@ -61,7 +61,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-BMP280_HandleTypedef bmp280;
 float pressure, temperature, humidity;
 
 uint16_t size;
@@ -73,6 +72,8 @@ volatile uint16_t rxPos = 0;
 char messageBuffer[RX_BUFFER_SIZE];
 volatile uint8_t messageReady = 0;
 extern uint8_t rxBuffer[RX_BUFFER_SIZE];
+
+SmartWatchData_t ScreenState;
 
 /* USER CODE END PV */
 
@@ -194,6 +195,21 @@ int main(void)
 
 #endif
 
+#ifdef SCREEN_TEST
+//        ST7789_Fill_Color(BLACK);
+//    	//ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
+////    	ST7789_DrawCircle(150,85,50,GREEN);
+////    	ST7789_DrawCircle(150,85,51,GREEN);
+    	//ST7789_DrawCircle(150,85,52,RED);
+//		HAL_Delay(1000);
+//
+        Display_HeartRate(30,30);
+        HAL_Delay(50);
+        Display_EnvironnementData(30,55);
+		HAL_Delay(4000);
+
+#endif
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -255,19 +271,7 @@ int main(void)
         }
 #endif
 
-#ifdef SCREEN_TEST
-//        ST7789_Fill_Color(BLACK);
-//    	//ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
-////    	ST7789_DrawCircle(150,85,50,GREEN);
-////    	ST7789_DrawCircle(150,85,51,GREEN);
-    	//ST7789_DrawCircle(150,85,52,RED);
-//		HAL_Delay(1000);
-//
-        Display_DrawHeart(160,85);
 
-		HAL_Delay(4000);
-
-#endif
 
 #ifdef MPU6500_TEST
 	    read_mpu_data_example();

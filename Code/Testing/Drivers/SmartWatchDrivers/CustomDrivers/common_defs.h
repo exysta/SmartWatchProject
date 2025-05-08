@@ -14,6 +14,7 @@
 #include "MPU6500_driver.h" // Include sensor-specific data types if needed
 #include "GNSS.h"
 #include "i2c.h"
+#include "usart.h"
 
 //#define BLE_TEST
 #define SCREEN_TEST
@@ -22,6 +23,7 @@
 //#define MPU6500_TEST
 
 #define STLINK_UART huart3
+
 #define BLE_UART huart4
 #define BME280_I2C hi2c2
 #define GNSS_UART huart5
@@ -62,10 +64,7 @@ typedef struct {
 
     // MAX30102 Data
     int16_t heart_rate;
-    uint8_t hr_confidence; // Or a simple bool hr_valid;
     float spo2;
-    uint8_t spo2_confidence; // Or a simple bool spo2_valid;
-    int hr_spo2_data_valid;
 
     // GNSS Data (using struct from GNSS.h)
     GNSS_StateHandle gps_data;

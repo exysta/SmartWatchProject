@@ -1,2 +1,6 @@
-../Drivers/SmartWatchDrivers/CustomDrivers/display.c:222:6:split_color_array	2
-../Drivers/SmartWatchDrivers/CustomDrivers/display.c:229:6:Display_DrawHeart	1
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:22:6:Display_Init	1
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:29:6:split_color_array	2
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:38:6:Display_Image	1
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:51:6:Display_DrawHeart	1
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:58:6:Display_HeartRate	1
+../Drivers/SmartWatchDrivers/CustomDrivers/display.c:74:6:Display_EnvironnementData	1

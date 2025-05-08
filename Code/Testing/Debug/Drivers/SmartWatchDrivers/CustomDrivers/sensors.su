@@ -1,1 +1,2 @@
-../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:13:6:read_mpu_data	400	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:17:6:Sensor_MPU6500_read_data	400	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:64:6:Sensor_BMP280_init	280	static

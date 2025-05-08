@@ -18,11 +18,16 @@
 // (Gardez vos définitions de UI_Screen_State_t et SmartWatchData_t de la réponse précédente)
 
 // Fonctions publiques du module display
-int Display_Init(SPI_HandleTypeDef* hspi_display);
+void Display_Init();
 void Display_ShowMessage(const char* message, uint16_t color);
+void Display_Image(uint16_t x_center, uint16_t y_center,uint16_t x_width, uint16_t y_width,const uint16_t *img,size_t size);
 
 // Nouvelle fonction pour dessiner un cœur
-void Display_DrawHeart(uint16_t x_center, uint16_t y_center);
 
+void Display_DrawHeart(uint16_t x_center, uint16_t y_center);
+void Display_HeartRate(uint16_t x_center, uint16_t y_center);
+void Display_EnvironnementData(uint16_t x, uint16_t y);
+
+void split_color_array(const uint16_t *input, uint8_t *output, size_t length);
 
 #endif /* INC_DISPLAY_H_ */

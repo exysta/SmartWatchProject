@@ -25,7 +25,8 @@ extern FontDef Font_16x26;
 
 /* 128x128 pixel RGB565 image */
 extern const uint16_t saber[][128];
-
+extern const uint16_t heart_icon_data[1600];
+extern const uint16_t thermometer_icon_data[1600];
 /* 240x240 pixel RGB565 image 
 extern const uint16_t knky[][240];
 extern const uint16_t tek[][240];
