@@ -73,7 +73,7 @@ char messageBuffer[RX_BUFFER_SIZE];
 volatile uint8_t messageReady = 0;
 extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 
-SmartWatchData_t ScreenState;
+extern SmartWatchData_t SmartWatchData_handle;
 
 /* USER CODE END PV */
 
@@ -203,13 +203,16 @@ int main(void)
     	//ST7789_DrawCircle(150,85,52,RED);
 //		HAL_Delay(1000);
 //
-        Display_HeartRate(30,30);
-        HAL_Delay(50);
-        Display_EnvironnementData(30,55);
-		HAL_Delay(4000);
+       	//Display_HeartRate(30,30,&SmartWatchData_handle);
+//        HAL_Delay(50);
+//        Display_EnvironnementData(30,70,&SmartWatchData_handle);
+//		HAL_Delay(4000);
+	//Display_Image(100,40,48,48,weather_gif_array[0],weather_gif_frame_pixel_count );
+
+	//Display_Image(100,40,48,48,epd_bitmap_frame_00_delay_0,weather_gif_frame_pixel_count );
+	//Display_DrawHeart( 100, 50);
 
 #endif
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -278,6 +281,10 @@ int main(void)
 	    printf("===================================\r\n");
 		HAL_Delay(1000);
 
+#endif
+
+#ifdef SCREEN_TEST
+		Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
     /* USER CODE END WHILE */

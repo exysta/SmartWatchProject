@@ -397,7 +397,6 @@ void ST7789_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r, uint16_t color)
 	}
 	ST7789_UnSelect();
 }
-
 /**
  * @brief Draw an Image on the screen
  * @param x&y -> start point of the Image

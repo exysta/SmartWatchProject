@@ -27,6 +27,11 @@ extern FontDef Font_16x26;
 extern const uint16_t saber[][128];
 extern const uint16_t heart_icon_data[1600];
 extern const uint16_t thermometer_icon_data[1600];
+extern const int weather_gif_array_LEN;
+extern const int weather_gif_frame_pixel_count;
+
+extern const uint16_t* weather_gif_array[35];
+extern const uint16_t epd_bitmap_frame_00_delay_0 [2304];
 /* 240x240 pixel RGB565 image 
 extern const uint16_t knky[][240];
 extern const uint16_t tek[][240];

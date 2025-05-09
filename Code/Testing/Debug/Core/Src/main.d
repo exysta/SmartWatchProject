@@ -42,7 +42,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h \
- C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/display.h
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/display.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -92,3 +93,4 @@ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/display.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h:

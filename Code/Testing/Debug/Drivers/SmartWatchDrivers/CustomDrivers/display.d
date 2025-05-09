@@ -35,11 +35,11 @@ Drivers/SmartWatchDrivers/CustomDrivers/display.o: \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/fonts.h \
  ../Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h \
  ../Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h
+ ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/fonts.h
 ../Drivers/SmartWatchDrivers/CustomDrivers/display.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/st7789.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/fonts.h:
@@ -76,10 +76,10 @@ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/fonts.h:
 ../Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h:
 ../Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/fonts.h:

@@ -16,8 +16,19 @@
 
 const uint16_t heart_icon_width = 40;
 const uint16_t heart_icon_height = 40;
+const uint16_t thermometer_icon_width = 40;
+const uint16_t thermometer_icon_height = 40;
+const uint16_t weather_animation_width = 48;
+const uint16_t weather_animation_height = 48;
 
 extern SmartWatchData_t SmartWatchData_handle;
+static UI_Screen_State_t previous_screenState;
+static UI_Screen_State_t current_screenState;
+
+// --- Static variables for animation state ---
+static uint8_t  s_animation_current_frame = 0;
+static uint32_t s_animation_last_update_tick = 0;
+#define ANIMATION_FRAME_DELAY_MS 80 // Adjust for desired speed (milliseconds)
 
 void Display_Init()
 {
@@ -40,22 +51,27 @@ void Display_Image(uint16_t x_center, uint16_t y_center,uint16_t x_width, uint16
 	// We use the fixed size from the image data now
 	uint16_t img_x = x_center - (x_width / 2);
 	uint16_t img_y = y_center - (y_width / 2);
+
 	uint8_t result[pixel_count * 2];
 
 	//lenght of the array
 	split_color_array(img, result,
 			pixel_count/ sizeof(uint16_t));
+
 	ST7789_DrawImage(img_x, img_y, x_width, y_width, result);
 }
 
 void Display_DrawHeart(uint16_t x_center, uint16_t y_center)
 {
-
 	Display_Image(x_center,y_center,heart_icon_width,heart_icon_width,heart_icon_data,sizeof(heart_icon_data) );
 }
 
+void Display_DrawThermo(uint16_t x_center, uint16_t y_center)
+{
+	Display_Image(x_center,y_center,thermometer_icon_width,thermometer_icon_height,thermometer_icon_data,sizeof(thermometer_icon_data) );
+}
 
-void Display_HeartRate(uint16_t x_center, uint16_t y_center)
+void Display_HeartRate(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
 {
 	//uint8_t hr = SmartWatchData_handle.heart_rate;
 
@@ -71,20 +87,108 @@ void Display_HeartRate(uint16_t x_center, uint16_t y_center)
 	Display_DrawHeart(x_center, y_center);
 }
 
-void Display_EnvironnementData(uint16_t x, uint16_t y)
+void Display_EnvironnementData(uint16_t x, uint16_t y,const SmartWatchData_t* pData)
 {
 	//uint8_t hr = SmartWatchData_handle.heart_rate;
-	uint16_t temp = SmartWatchData_handle.temperature;
-	uint16_t pressure = SmartWatchData_handle.pressure;
-	uint16_t humidity = SmartWatchData_handle.humidity;
+	uint16_t temp = pData->temperature;
+	uint16_t pressure = pData->pressure;
+	uint16_t humidity = pData->humidity;
+
 
 	temp = 0;
 	pressure = 0;
 	humidity = 0;
 
 	char buf[32];
-	snprintf(buf, sizeof(buf), "T :%d, P : %d, H : %d ", temp, pressure,
+	snprintf(buf, sizeof(buf), " T :%d, P : %d, H : %d", temp, pressure,
 			humidity);
 
-	ST7789_WriteString(x, y, buf, Font_11x18, GREEN, BLACK);
+	//for coorect rendering of both text and heart
+	int text_x_offset = 30;
+	int text_y_offset = -5;
+
+//	ST7789_WriteString(x + text_x_offset, y + text_y_offset, buf, Font_11x18, GREEN, BLACK);
+//	Display_DrawThermo(x,y);
+	Display_RenderAnimation(x,y,weather_animation_width,weather_animation_height,weather_gif_array,weather_gif_array_LEN,weather_gif_frame_pixel_count);
+
+}
+
+// --- Animation Function ---
+// This function should be called repeatedly (e.g., from the main loop or Display_Update)
+// when the animation needs to be displayed.
+void Display_RenderAnimation(uint16_t x_center, uint16_t y_center,uint16_t x_width, uint16_t y_width,const uint16_t **frame_array,uint8_t animation_frame_array_len,size_t pixel_count)
+{
+    uint32_t current_tick = HAL_GetTick();
+
+    // Check if it's time to update the frame
+    if (current_tick - s_animation_last_update_tick >= ANIMATION_FRAME_DELAY_MS) {
+        s_animation_last_update_tick = current_tick;
+
+        // Get the pointer to the current frame data
+        const uint16_t* frame_data = frame_array[s_animation_current_frame];
+    	Display_Image(x_center,y_center,x_width,y_width,frame_data,pixel_count );
+
+        // Advance to the next frame
+        s_animation_current_frame++;
+        if (s_animation_current_frame >= animation_frame_array_len) {
+            s_animation_current_frame = 0; // Loop back to the beginning
+        }
+    }
+    // If not enough time has passed, do nothing, the previous frame remains displayed.
+}
+
+
+void Display_RenderClock(const SmartWatchData_t* pData)
+{
+
+}
+
+void Display_RenderEnvironmental(const SmartWatchData_t* pData)
+{
+
+}
+
+
+void Display_RenderHeartRate(const SmartWatchData_t* pData)
+{
+
+}
+
+void Display_RenderGPS(const SmartWatchData_t* pData)
+{
+
+}
+
+
+// --- Update the main Display_Update function ---
+void Display_Update(UI_Screen_State_t screen, const SmartWatchData_t* pData) {
+
+	previous_screenState = current_screenState;
+	current_screenState = screen;
+    // OPTIONAL: Clear screen only when changing screen state, not every frame of animation.
+    if (current_screenState != previous_screenState) {
+        ST7789_Fill_Color(BLACK); // Clear only when screen changes
+        s_animation_current_frame = 0; // Reset animation frame when switching to it
+        s_animation_last_update_tick = HAL_GetTick(); // Reset timer to draw first frame immediately
+    }
+
+    switch (screen) {
+        case SCREEN_CLOCK:
+            Display_RenderClock(pData);
+            break;
+        case SCREEN_ENVIRONMENTAL:
+            Display_RenderEnvironmental(pData);
+            break;
+        case SCREEN_HEART_RATE: // Example: Show static heart + text here
+             Display_RenderHeartRate(pData); // Assuming this renders text + static heart
+             break;
+        case SCREEN_GPS_STATUS:
+            Display_RenderGPS(pData);
+            break;
+
+        // ... other cases ...
+        default:
+            ST7789_WriteString(30, 20, "Unknown Screen", Font_11x18, RED, BLACK);
+            break;
+    }
 }
