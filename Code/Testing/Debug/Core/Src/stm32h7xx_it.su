@@ -13,5 +13,6 @@
 ../Core/Src/stm32h7xx_it.c:253:6:DMA1_Stream3_IRQHandler	8	static
 ../Core/Src/stm32h7xx_it.c:267:6:DMA1_Stream5_IRQHandler	8	static
 ../Core/Src/stm32h7xx_it.c:281:6:SPI1_IRQHandler	8	static
-../Core/Src/stm32h7xx_it.c:295:6:UART4_IRQHandler	8	static
-../Core/Src/stm32h7xx_it.c:309:6:UART5_IRQHandler	8	static
+../Core/Src/stm32h7xx_it.c:295:6:EXTI15_10_IRQHandler	8	static
+../Core/Src/stm32h7xx_it.c:309:6:UART4_IRQHandler	8	static
+../Core/Src/stm32h7xx_it.c:323:6:UART5_IRQHandler	8	static

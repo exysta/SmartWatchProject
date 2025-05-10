@@ -20,6 +20,12 @@ const uint16_t thermometer_icon_width = 40;
 const uint16_t thermometer_icon_height = 40;
 const uint16_t weather_animation_width = 48;
 const uint16_t weather_animation_height = 48;
+const uint16_t heart_animation_width = 48;
+const uint16_t heart_animation_height = 48;
+
+//top middle of screen
+const static uint16_t gif_center_x = 160;
+const static uint16_t gif_center_y = 30;
 
 extern SmartWatchData_t SmartWatchData_handle;
 static UI_Screen_State_t previous_screenState;
@@ -30,10 +36,11 @@ static uint8_t  s_animation_current_frame = 0;
 static uint32_t s_animation_last_update_tick = 0;
 #define ANIMATION_FRAME_DELAY_MS 80 // Adjust for desired speed (milliseconds)
 
-void Display_Init()
+void Display_Init(UI_Screen_State_t screenState)
 {
 	ST7789_Init();
-
+	previous_screenState = screenState;
+	current_screenState = screenState;
 }
 
 //this shit is need to have the output image with the right color
@@ -73,22 +80,29 @@ void Display_DrawThermo(uint16_t x_center, uint16_t y_center)
 
 void Display_HeartRate(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
 {
-	//uint8_t hr = SmartWatchData_handle.heart_rate;
+	uint8_t hr = SmartWatchData_handle.heart_rate;
+	uint16_t spo2 = SmartWatchData_handle.spo2;
 
-	uint8_t hr = 72;
-	char buf[16];
-	snprintf(buf, sizeof(buf), "%u", (unsigned) hr);
+	char hr_buf[32];
+	char spo2_buf[32];
 
-	//for coorect rendering of both text and heart
-	int text_x_offset = 30;
-	int text_y_offset = -5;
+	snprintf(hr_buf, sizeof(hr_buf), " HeartRate : %u", (unsigned) hr);
+	snprintf(spo2_buf, sizeof(spo2_buf), " SPO2 : %u", (unsigned) spo2);
 
-	ST7789_WriteString(x_center + text_x_offset, y_center + text_y_offset, buf, Font_11x18, RED, BLACK);
-	Display_DrawHeart(x_center, y_center);
+	//space between lines of text
+	int text_y_offset = 30;
+
+	ST7789_WriteString(x_center, y_center , hr_buf, Font_11x18, RED, BLACK);
+	ST7789_WriteString(x_center, y_center + text_y_offset, spo2_buf, Font_11x18, RED, BLACK);
+
+
+	Display_RenderAnimation(gif_center_x,gif_center_y,heart_animation_width,heart_animation_height,heart_gif_array,heart_gif_array_LEN,heart_gif_frame_pixel_count);
 }
 
 void Display_EnvironnementData(uint16_t x, uint16_t y,const SmartWatchData_t* pData)
 {
+
+
 	//uint8_t hr = SmartWatchData_handle.heart_rate;
 	uint16_t temp = pData->temperature;
 	uint16_t pressure = pData->pressure;
@@ -96,20 +110,27 @@ void Display_EnvironnementData(uint16_t x, uint16_t y,const SmartWatchData_t* pD
 
 
 	temp = 0;
-	pressure = 0;
+	//pressure = 0;
 	humidity = 0;
 
-	char buf[32];
-	snprintf(buf, sizeof(buf), " T :%d, P : %d, H : %d", temp, pressure,
-			humidity);
+	char buf_temp[32];
+	char buf_pressure[32];
+	char buf_humidity[32];
 
-	//for coorect rendering of both text and heart
-	int text_x_offset = 30;
-	int text_y_offset = -5;
+	snprintf(buf_temp, sizeof(buf_temp), " Temperature : %d", temp);
+	snprintf(buf_pressure, sizeof(buf_pressure), " Pressure : %d", pressure);
+	snprintf(buf_humidity, sizeof(buf_humidity), " Humidity : %d", humidity);
 
-//	ST7789_WriteString(x + text_x_offset, y + text_y_offset, buf, Font_11x18, GREEN, BLACK);
+	//space between lines of text
+	int text_y_offset = 30;
+
+	// no border checking so be careful when calling this
+	ST7789_WriteString(x , y , buf_temp, Font_11x18, GREEN, BLACK);
+	ST7789_WriteString(x , y + text_y_offset , buf_pressure, Font_11x18, GREEN, BLACK);
+	ST7789_WriteString(x , y + 2 * text_y_offset , buf_humidity, Font_11x18, GREEN, BLACK);
+
 //	Display_DrawThermo(x,y);
-	Display_RenderAnimation(x,y,weather_animation_width,weather_animation_height,weather_gif_array,weather_gif_array_LEN,weather_gif_frame_pixel_count);
+	Display_RenderAnimation(gif_center_x,gif_center_y,weather_animation_width,weather_animation_height,weather_gif_array,weather_gif_array_LEN,weather_gif_frame_pixel_count);
 
 }
 
@@ -145,12 +166,13 @@ void Display_RenderClock(const SmartWatchData_t* pData)
 
 void Display_RenderEnvironmental(const SmartWatchData_t* pData)
 {
-
+	Display_EnvironnementData(40,60,pData);
 }
 
 
 void Display_RenderHeartRate(const SmartWatchData_t* pData)
 {
+	Display_HeartRate(40, 60, pData);
 
 }
 

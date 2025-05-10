@@ -10,6 +10,5 @@
 
 //File to process user input such as buttons to switch the screen state
 void Input_Init(void);
-int Input_GetAndClear_ButtonPressed(void);
-
+#define switch_display_button_pin
 #endif /* INC_INPUT_H_ */

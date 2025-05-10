@@ -74,7 +74,7 @@ volatile uint8_t messageReady = 0;
 extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 
 extern SmartWatchData_t SmartWatchData_handle;
-
+UI_Screen_State_t SmartWatchScreen_State;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -171,10 +171,6 @@ int main(void)
 	uint32_t Timer = HAL_GetTick();
 #endif
 
-#ifdef SCREEN_TEST
-	ST7789_Init();
-#endif
-
 #ifdef MPU6500_TEST
 
 	/* WHO_AM_I read */
@@ -196,21 +192,8 @@ int main(void)
 #endif
 
 #ifdef SCREEN_TEST
-//        ST7789_Fill_Color(BLACK);
-//    	//ST7789_WriteString(40, 20, " hello it's me lucas", Font_11x18, WHITE, BLACK);
-////    	ST7789_DrawCircle(150,85,50,GREEN);
-////    	ST7789_DrawCircle(150,85,51,GREEN);
-    	//ST7789_DrawCircle(150,85,52,RED);
-//		HAL_Delay(1000);
-//
-       	//Display_HeartRate(30,30,&SmartWatchData_handle);
-//        HAL_Delay(50);
-//        Display_EnvironnementData(30,70,&SmartWatchData_handle);
-//		HAL_Delay(4000);
-	//Display_Image(100,40,48,48,weather_gif_array[0],weather_gif_frame_pixel_count );
-
-	//Display_Image(100,40,48,48,epd_bitmap_frame_00_delay_0,weather_gif_frame_pixel_count );
-	//Display_DrawHeart( 100, 50);
+	SmartWatchScreen_State = SCREEN_ENVIRONMENTAL;
+	Display_Init(SmartWatchScreen_State);
 
 #endif
   /* USER CODE END 2 */
@@ -284,7 +267,18 @@ int main(void)
 #endif
 
 #ifdef SCREEN_TEST
-		Display_EnvironnementData(30,70,&SmartWatchData_handle);
+
+//	    for (int i = 0; i < 100; ++i) {
+//	    	SmartWatchData_handle.pressure = 100.0f + 10.0f * (i % 5); // 100, 110, 120, 130, 140, repeat
+//	    	HAL_Delay(80);
+//	    }
+		SmartWatchData_handle.pressure += 1;
+		SmartWatchData_handle.heart_rate += 1;
+		SmartWatchData_handle.spo2 += 1;
+		SmartWatchScreen_State = SCREEN_HEART_RATE;
+	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
+	    HAL_Delay(20);
+		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
     /* USER CODE END WHILE */
@@ -375,6 +369,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
         // Restart DMA reception
         HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
         __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+    }
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == InputButton_Pin)
+    {
+
     }
 }
 /* USER CODE END 4 */
