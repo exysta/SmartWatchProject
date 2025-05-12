@@ -1,0 +1,3 @@
+../Drivers/SmartWatchDrivers/src/ble_comms.c:17:6:sendATCommand	216	static
+../Drivers/SmartWatchDrivers/src/ble_comms.c:39:6:configureHM10	8	static
+../Drivers/SmartWatchDrivers/src/ble_comms.c:52:6:startUartReception	16	static

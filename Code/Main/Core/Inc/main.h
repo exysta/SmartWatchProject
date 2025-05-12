@@ -63,6 +63,7 @@ void Error_Handler(void);
 #define MAX30102_SDA_GPIO_Port GPIOC
 #define MAX30102_INT_Pin GPIO_PIN_2
 #define MAX30102_INT_GPIO_Port GPIOC
+#define MAX30102_INT_EXTI_IRQn EXTI2_IRQn
 #define LED_MAX30102_Pin GPIO_PIN_3
 #define LED_MAX30102_GPIO_Port GPIOC
 #define STLINK_TX_Pin GPIO_PIN_0
@@ -85,6 +86,8 @@ void Error_Handler(void);
 #define LED_LCD_GPIO_Port GPIOB
 #define LED_BMP280_Pin GPIO_PIN_2
 #define LED_BMP280_GPIO_Port GPIOB
+#define BMP280_SCL_Pin GPIO_PIN_10
+#define BMP280_SCL_GPIO_Port GPIOB
 #define BMP280_SDA_Pin GPIO_PIN_11
 #define BMP280_SDA_GPIO_Port GPIOB
 #define ST7789_RST_Pin GPIO_PIN_12
@@ -93,6 +96,8 @@ void Error_Handler(void);
 #define ST7789_SCK_GPIO_Port GPIOB
 #define ST7789_MISO_Pin GPIO_PIN_14
 #define ST7789_MISO_GPIO_Port GPIOB
+#define ST7789_MOSI_Pin GPIO_PIN_15
+#define ST7789_MOSI_GPIO_Port GPIOB
 #define ST7789_DC_Pin GPIO_PIN_6
 #define ST7789_DC_GPIO_Port GPIOC
 #define ST7789_CS_Pin GPIO_PIN_7
@@ -101,8 +106,10 @@ void Error_Handler(void);
 #define ST7789_BLK_GPIO_Port GPIOC
 #define BUTTON_NEXT_Pin GPIO_PIN_9
 #define BUTTON_NEXT_GPIO_Port GPIOC
+#define BUTTON_NEXT_EXTI_IRQn EXTI9_5_IRQn
 #define BUTTON_BACK_Pin GPIO_PIN_8
 #define BUTTON_BACK_GPIO_Port GPIOA
+#define BUTTON_BACK_EXTI_IRQn EXTI9_5_IRQn
 #define BLE_TX_Pin GPIO_PIN_9
 #define BLE_TX_GPIO_Port GPIOA
 #define BLE_RX_Pin GPIO_PIN_10
@@ -115,6 +122,7 @@ void Error_Handler(void);
 #define BLE_STATE_GPIO_Port GPIOC
 #define MPU6500_INT_Pin GPIO_PIN_5
 #define MPU6500_INT_GPIO_Port GPIOB
+#define MPU6500_INT_EXTI_IRQn EXTI9_5_IRQn
 #define MPU6500_SCL_Pin GPIO_PIN_6
 #define MPU6500_SCL_GPIO_Port GPIOB
 #define MPU6500_SDA_Pin GPIO_PIN_7

@@ -1,0 +1,13 @@
+../Drivers/SmartWatchDrivers/src/display.c:39:6:Display_Init	1
+../Drivers/SmartWatchDrivers/src/display.c:47:6:split_color_array	2
+../Drivers/SmartWatchDrivers/src/display.c:56:6:Display_Image	1
+../Drivers/SmartWatchDrivers/src/display.c:71:6:Display_DrawHeart	1
+../Drivers/SmartWatchDrivers/src/display.c:76:6:Display_DrawThermo	1
+../Drivers/SmartWatchDrivers/src/display.c:81:6:Display_HeartRate	1
+../Drivers/SmartWatchDrivers/src/display.c:102:6:Display_EnvironnementData	1
+../Drivers/SmartWatchDrivers/src/display.c:140:6:Display_RenderAnimation	3
+../Drivers/SmartWatchDrivers/src/display.c:162:6:Display_RenderClock	1
+../Drivers/SmartWatchDrivers/src/display.c:167:6:Display_RenderEnvironmental	1
+../Drivers/SmartWatchDrivers/src/display.c:173:6:Display_RenderHeartRate	1
+../Drivers/SmartWatchDrivers/src/display.c:179:6:Display_RenderGPS	1
+../Drivers/SmartWatchDrivers/src/display.c:186:6:Display_Update	6

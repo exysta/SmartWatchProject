@@ -21,9 +21,29 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ramfunc.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h \
- ../Core/Inc/gpio.h ../Core/Inc/main.h
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
+ ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/spi.h \
+ ../Core/Inc/usart.h ../Core/Inc/gpio.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/st7789.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/fonts.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/ble_comms.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/display.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/st7789.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -47,7 +67,30 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ramfunc.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h:
-../Core/Inc/gpio.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
+../Core/Inc/dma.h:
 ../Core/Inc/main.h:
+../Core/Inc/i2c.h:
+../Core/Inc/spi.h:
+../Core/Inc/usart.h:
+../Core/Inc/gpio.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/st7789.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/fonts.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/ble_comms.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/display.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/st7789.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h:
