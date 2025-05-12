@@ -39,4 +39,5 @@
 "./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/fonts.o"
+"./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/st7789.o"

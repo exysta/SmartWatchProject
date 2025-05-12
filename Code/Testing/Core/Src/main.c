@@ -37,7 +37,7 @@
 #include "ble_comms.h"
 #include "common_defs.h"
 #include "display.h"
-
+#include "max30102_for_stm32_hal.h";
 
 /* USER CODE END Includes */
 
@@ -75,6 +75,8 @@ extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 
 extern SmartWatchData_t SmartWatchData_handle;
 UI_Screen_State_t SmartWatchScreen_State;
+max30102_t max30102;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,6 +134,7 @@ int main(void)
   MX_UART5_Init();
   MX_SPI1_Init();
   MX_I2C4_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
 #ifdef BLE_TEST
@@ -195,6 +198,113 @@ int main(void)
 	SmartWatchScreen_State = SCREEN_ENVIRONMENTAL;
 	Display_Init(SmartWatchScreen_State);
 
+#endif
+
+
+#ifdef MAX30102_I2C
+	// 7-bit I2C address of the MAX30102 is 0x57, shift left for HAL (8-bit format)
+	#define MAX30102_ADDR   (0x57 << 1)
+
+	// MAX30102 register addresses
+	#define MAX30102_PART_ID_REG   0xFF
+
+	// timeout for HAL transactions (ms)
+	#define MAX30102_I2C_TIMEOUT   100
+
+	/**
+	 * @brief  Simple connection test for MAX30102
+	 * @retval HAL status: HAL_OK if device responded with correct PART_ID,
+	 *         HAL_ERROR otherwise (or bus error)
+	 */
+	HAL_StatusTypeDef MAX30102_TestConnection(void)
+	{
+	    uint8_t part_id = 0;
+	    HAL_StatusTypeDef status;
+
+	    // Read PART_ID register
+	    status = HAL_I2C_Mem_Read(&MAX30102_I2C,
+	                              MAX30102_ADDR,
+	                              MAX30102_PART_ID_REG,
+	                              I2C_MEMADD_SIZE_8BIT,
+	                              &part_id,
+	                              1,
+	                              MAX30102_I2C_TIMEOUT);
+
+	    if (status != HAL_OK) {
+	        // I2C error (NACK, bus fault, etc.)
+	        return status;
+	    }
+
+	    if (part_id != 0x15) {
+	        // Unexpected ID
+	        return HAL_ERROR;
+	    }
+
+	    // All good!
+	    return HAL_OK;
+	}
+	HAL_StatusTypeDef Scan_I2C_Bus(void)
+	{
+	    HAL_StatusTypeDef status;
+	    uint32_t err;
+	    for (uint16_t addr = 1; addr < 128; addr++)
+	    {
+	        status = HAL_I2C_IsDeviceReady(&MAX30102_I2C,
+	                                       addr << 1,
+	                                       3,
+	                                       MAX30102_I2C_TIMEOUT);
+	        if (status == HAL_OK)
+	        {
+	            printf("I2C: device ACK at 0x%02X\r\n", addr);
+	        }
+	        else
+	        {
+	            err = HAL_I2C_GetError(&MAX30102_I2C);
+	            // err == HAL_I2C_ERROR_NONE usually means NACK
+	            printf("I2C: 0x%02X no ACK (err=0x%lX)\r\n", addr, err);
+	        }
+	        HAL_Delay(5);  // give time for UART to flush
+	    }
+	    return HAL_OK;
+	}
+//	HAL_StatusTypeDef test = MAX30102_TestConnection();
+	Scan_I2C_Bus();
+	  // Initiation
+	  max30102_init(&max30102, &MAX30102_I2C);
+	  max30102_reset(&max30102);
+	  max30102_clear_fifo(&max30102);
+	  max30102_set_fifo_config(&max30102, max30102_smp_ave_8, 1, 7);
+
+	  // Sensor settings
+	  max30102_set_led_pulse_width(&max30102, max30102_pw_16_bit);
+	  max30102_set_adc_resolution(&max30102, max30102_adc_2048);
+	  max30102_set_sampling_rate(&max30102, max30102_sr_800);
+	  max30102_set_led_current_1(&max30102, 6.2);
+	  max30102_set_led_current_2(&max30102, 6.2);
+
+	  // Enter SpO2 mode
+	  max30102_set_mode(&max30102, max30102_spo2);
+	  max30102_set_a_full(&max30102, 1);
+
+	  // Initiate 1 temperature measurement
+	  max30102_set_die_temp_en(&max30102, 1);
+	  max30102_set_die_temp_rdy(&max30102, 1);
+
+	  uint8_t en_reg[2] = {0};
+	  max30102_read(&max30102, 0x00, en_reg, 1);
+
+	//Enter measurement mode:
+	// Enter SpO2 mode
+	max30102_set_mode(&max30102, max30102_spo2);
+
+	//Enable the required interrupts:
+	// Enable FIFO_A_FULL interrupt
+	max30102_set_a_full(&max30102, 1);
+	// Enable die temperature measurement
+	max30102_set_die_temp_en(&max30102, 1);
+	// Enable DIE_TEMP_RDY interrupt
+	max30102_set_die_temp_rdy(&max30102, 1);
+	printf("test\r\n");
 #endif
   /* USER CODE END 2 */
 
@@ -279,6 +389,13 @@ int main(void)
 	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
 	    HAL_Delay(20);
 		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
+#endif
+
+#ifdef MAX30102_I2C
+	    // If interrupt flag is active
+	    if (max30102_has_interrupt(&max30102))
+	      // Run interrupt handler to read FIFO
+	      max30102_interrupt_handler(&max30102);
 #endif
 
     /* USER CODE END WHILE */
@@ -377,6 +494,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if (GPIO_Pin == InputButton_Pin)
     {
 
+    }
+    else if (GPIO_Pin == MAX30102_INT_Pin)
+    {
+    	max30102_on_interrupt(&max30102);
     }
 }
 /* USER CODE END 4 */

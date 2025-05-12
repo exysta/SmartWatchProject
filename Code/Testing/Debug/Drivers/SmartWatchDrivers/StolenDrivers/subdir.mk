@@ -8,18 +8,21 @@ C_SRCS += \
 ../Drivers/SmartWatchDrivers/StolenDrivers/GNSS.c \
 ../Drivers/SmartWatchDrivers/StolenDrivers/bmp280.c \
 ../Drivers/SmartWatchDrivers/StolenDrivers/fonts.c \
+../Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.c \
 ../Drivers/SmartWatchDrivers/StolenDrivers/st7789.c 
 
 OBJS += \
 ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.o \
 ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.o \
 ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.o \
+./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.o \
 ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.o 
 
 C_DEPS += \
 ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.d \
 ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.d \
 ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.d \
+./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.d \
 ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.d 
 
 
@@ -30,7 +33,7 @@ Drivers/SmartWatchDrivers/StolenDrivers/%.o Drivers/SmartWatchDrivers/StolenDriv
 clean: clean-Drivers-2f-SmartWatchDrivers-2f-StolenDrivers
 
 clean-Drivers-2f-SmartWatchDrivers-2f-StolenDrivers:
-	-$(RM) ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.d ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.o ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.su ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.d ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.o ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.su ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.d ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.o ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.su ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.d ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.o ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.su
+	-$(RM) ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.d ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.o ./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.su ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.d ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.o ./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.su ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.d ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.o ./Drivers/SmartWatchDrivers/StolenDrivers/fonts.su ./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.d ./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.o ./Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.su ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.cyclo ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.d ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.o ./Drivers/SmartWatchDrivers/StolenDrivers/st7789.su
 
 .PHONY: clean-Drivers-2f-SmartWatchDrivers-2f-StolenDrivers
 

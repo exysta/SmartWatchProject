@@ -72,6 +72,9 @@ void Error_Handler(void);
 #define MPU6500_AD0_GPIO_Port GPIOA
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
+#define MAX30102_INT_Pin GPIO_PIN_8
+#define MAX30102_INT_GPIO_Port GPIOE
+#define MAX30102_INT_EXTI_IRQn EXTI9_5_IRQn
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
 #define STLINK_RX_Pin GPIO_PIN_8
@@ -88,6 +91,10 @@ void Error_Handler(void);
 #define ST7789_RST_GPIO_Port GPIOD
 #define ST7789_CS_Pin GPIO_PIN_9
 #define ST7789_CS_GPIO_Port GPIOG
+#define MAX30102_SCL_Pin GPIO_PIN_6
+#define MAX30102_SCL_GPIO_Port GPIOB
+#define MAX30102_SDA_Pin GPIO_PIN_7
+#define MAX30102_SDA_GPIO_Port GPIOB
 #define LD2_Pin GPIO_PIN_1
 #define LD2_GPIO_Port GPIOE
 

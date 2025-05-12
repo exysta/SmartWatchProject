@@ -17,10 +17,11 @@
 #include "usart.h"
 
 //#define BLE_TEST
-#define SCREEN_TEST
+//#define SCREEN_TEST
 //#define BME280
 //#define GPS_TEST
 //#define MPU6500_TEST
+#define MAX30102_TEST
 
 #define STLINK_UART huart3
 
@@ -28,6 +29,7 @@
 #define BME280_I2C hi2c2
 #define GNSS_UART huart5
 #define MPU6500_I2C hi2c4
+#define MAX30102_I2C hi2c1
 
 #define BME280_ADDR 0x76
 #define RX_BUFFER_SIZE 256
