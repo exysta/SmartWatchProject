@@ -17,9 +17,9 @@
 #include "usart.h"
 
 //#define BLE_TEST
-//#define SCREEN_TEST
+#define SCREEN_TEST
 //#define BME280
-#define GPS_TEST
+//#define GPS_TEST
 //#define MPU6500_TEST
 //#define MAX30102_TEST
 

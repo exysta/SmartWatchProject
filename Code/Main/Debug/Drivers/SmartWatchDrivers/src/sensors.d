@@ -33,11 +33,12 @@ Drivers/SmartWatchDrivers/src/sensors.o: \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/sensors.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h \
+ ../Core/Inc/main.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h \
- ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/main.h \
- ../Core/Inc/usart.h
+ ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -71,10 +72,11 @@ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/sensors.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h:
+../Core/Inc/main.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h:
-../Core/Inc/main.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:

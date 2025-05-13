@@ -1,3 +1,10 @@
-../Drivers/SmartWatchDrivers/src/sensors.c:17:6:Sensor_MPU6500_read_data	400	static
-../Drivers/SmartWatchDrivers/src/sensors.c:64:6:Sensor_BMP280_init	280	static
-../Drivers/SmartWatchDrivers/src/sensors.c:93:6:Sensor_BMP280_read_data	8	static
+../Drivers/SmartWatchDrivers/src/sensors.c:25:6:Sensor_MPU6500_read_data	400	static
+../Drivers/SmartWatchDrivers/src/sensors.c:72:6:Sensor_BMP280_init	280	static
+../Drivers/SmartWatchDrivers/src/sensors.c:101:6:Sensor_BMP280_read_data	8	static
+../Drivers/SmartWatchDrivers/src/sensors.c:126:6:Sensor_MAX30102_configure_optimal_hr_spo2	24	static
+../Drivers/SmartWatchDrivers/src/sensors.c:238:13:_calc_acdc	64	static
+../Drivers/SmartWatchDrivers/src/sensors.c:252:16:_detect_MAX30102_hr	48	static
+../Drivers/SmartWatchDrivers/src/sensors.c:270:6:Sensor_MAX30102_init	16	static
+../Drivers/SmartWatchDrivers/src/sensors.c:276:6:Sensor_MAX30102_compute	40	static
+../Drivers/SmartWatchDrivers/src/sensors.c:294:9:Sensor_MAX30102_get_hr	4	static
+../Drivers/SmartWatchDrivers/src/sensors.c:298:9:Sensor_MAX30102_get_spo2	4	static

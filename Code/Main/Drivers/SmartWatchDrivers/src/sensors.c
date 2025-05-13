@@ -14,6 +14,14 @@
 SmartWatchData_t SmartWatchData_handle;
 BMP280_HandleTypedef bmp280;
 
+// size taken from your library
+#define MAX30102_N_SAMPLES  MAX30102_SAMPLE_LEN_MAX
+
+// internal storage
+static float MAX30102_fs;         // sampling rate in Hz
+static uint8_t last_MAX30102_hr;
+static uint8_t last_MAX30102_spo2;
+
 void Sensor_MPU6500_read_data()
 {
 #define MAX_SAMPLES 10 // Max samples to read in one go (especially for FIFO)
@@ -33,12 +41,12 @@ void Sensor_MPU6500_read_data()
 		for (i = 0; i < samples_read; i++)
 		{
 			SmartWatchData_handle.accel_g[i][0] = accel_g[i][0];
-			SmartWatchData_handle.accel_g[i][0] = accel_g[i][0];
-			SmartWatchData_handle.accel_g[i][0] = accel_g[i][0];
+			SmartWatchData_handle.accel_g[i][1] = accel_g[i][1];
+			SmartWatchData_handle.accel_g[i][2] = accel_g[i][2];
 
 			SmartWatchData_handle.gyro_dps[i][0] = gyro_dps[i][0];
-			SmartWatchData_handle.gyro_dps[i][0] = gyro_dps[i][0];
-			SmartWatchData_handle.gyro_dps[i][0] = gyro_dps[i][0];
+			SmartWatchData_handle.gyro_dps[i][1] = gyro_dps[i][1];
+			SmartWatchData_handle.gyro_dps[i][2] = gyro_dps[i][2];
 		}
 		//DEBUG
 //		printf("Read %u samples successfully.\r\n", samples_read);
@@ -92,7 +100,201 @@ void Sensor_BMP280_init()
 
 void Sensor_BMP280_read_data()
 {
-	bmp280_read_float(&bmp280, &SmartWatchData_handle.temperature, &SmartWatchData_handle.pressure, &SmartWatchData_handle.humidity);
+	bmp280_read_float(&bmp280, &SmartWatchData_handle.temperature,
+			&SmartWatchData_handle.pressure, &SmartWatchData_handle.humidity);
 
 }
 
+/**
+ * @brief Configures the MAX30102 sensor with generally optimal settings for MAX30102_hr and MAX30102_spo2.
+ *
+ * This function initializes the sensor, resets it, and sets various parameters
+ * for typical photoplethysmography (PPG) applications. Temperature-related
+ * features are not configured/enabled.
+ *
+ * @param obj Pointer to the max30102_t object instance.
+ * @param hi2c Pointer to the I2C_HandleTypeDef for communication.
+ *
+ * Recommended effective sample rate: 100 Hz (100 IR samples, 100 RED samples per second)
+ * Recommended ADC resolution: 18-bit
+ *
+ * Tune LED currents and ADC_RANGE based on observed signal quality.
+ * Aim for DC values of raw signals to be ~25-75% of full ADC scale (0 to 262143 for 18-bit).
+ * If signals are too low (small AC, low DC), increase LED current.
+ * If signals are saturating (DC near max), decrease LED current or increase ADC range.
+ */
+void Sensor_MAX30102_configure_optimal_hr_spo2(max30102_t *obj,
+		I2C_HandleTypeDef *hi2c)
+{
+//	// 1. Initialize the driver structure
+//	max30102_init(obj, hi2c);
+//
+//	// 2. Reset the sensor to ensure a known state
+//	// This also puts the sensor in shutdown mode and clears most registers.
+//	max30102_reset(obj);
+//	// A small delay might be good after reset, though not strictly specified for all operations.
+//	// HAL_Delay(10); // Optional: if issues arise, consider a small delay.
+//
+//	// 3. Clear FIFO pointers and overflow counter
+//	// (max30102_set_mode also clears FIFO, but explicit call here is good practice after reset)
+//	max30102_clear_fifo(obj);
+//
+//	// 4. Configure FIFO
+//	// - smp_ave: Sample averaging. max30102_smp_ave_1 means no averaging.
+//	//   This gives the rawest data at the selected sample rate.
+//	// - roll_over_en: 1 to enable roll-over (new data overwrites old when FIFO is full).
+//	// - fifo_a_full: Interrupt when FIFO has (32 - N) samples. N=7 means interrupt at 25 samples.
+//	max30102_set_fifo_config(obj, max30102_smp_ave_1, 1, 7);
+//
+//	// 5. Configure MAX30102_spo2 ADC and LED pulse characteristics
+//	// - LED Pulse Width: Determines ADC resolution.
+//	//   max30102_pw_18_bit (411µs) gives 18-bit ADC resolution.
+//	max30102_set_led_pulse_width(obj, max30102_pw_18_bit);
+//
+//	// - ADC Range/Resolution:
+//	//   max30102_adc_4096 (4096nA full scale) is a good starting point.
+//	//   If saturation occurs (DC values near 2^18-1), consider max30102_adc_8192.
+//	//   If signal is too weak, ensure LED currents are adequate before reducing range.
+//	max30102_set_adc_resolution(obj, max30102_adc_4096);
+//
+//	// - Sampling Rate:
+//	//   max30102_sr_100 (100 samples per second per active LED).
+//	//   With no averaging (smp_ave_1), this gives an effective output rate of 100Hz.
+//	max30102_set_sampling_rate(obj, max30102_sr_100);
+//
+//	// 6. Set LED Currents
+//	// These are critical and likely need tuning for your specific setup.
+//	// Start with moderate values (e.g., 6mA to 10mA).
+//	// Example: 7.4 mA for both. Increase if PPG signal AC amplitude is too small.
+//	// Decrease if DC level is saturating the ADC.
+//	float led_current_ma = 7.4f; // Typical starting value in mA
+//	max30102_set_led_current_1(obj, led_current_ma); // IR LED
+//	max30102_set_led_current_2(obj, led_current_ma); // RED LED
+//	// For multi-LED mode with more LEDs, you'd use max30102_set_multi_led_slot_x_y functions.
+//	// For MAX30102_spo2 mode, LED_PA1 (IR) and LED_PA2 (RED) are automatically used.
+//
+//	// 7. Set the operating mode to MAX30102_spo2 mode
+//	// This enables both IR and RED LEDs and begins measurements.
+//	// This function also clears the FIFO.
+//	max30102_set_mode(obj, max30102_spo2);
+//
+//	// 8. Enable Interrupts
+//	// - A_FULL (FIFO Almost Full): Triggers when FIFO reaches the tMAX30102_hreshold set by fifo_a_full.
+//	max30102_set_a_full(obj, 1);
+//
+//	// Ensure other (unused) interrupts are disabled.
+//	// After reset, interrupt enable registers are 0x00, so they are already disabled.
+//	// Explicitly ensuring they are off can be good for clarity if reset behavior is uncertain.
+//	max30102_set_ppg_rdy(obj, 0); // Disable PPG_RDY interrupt (using A_FULL instead)
+//	max30102_set_alc_ovf(obj, 0); // Disable Ambient Light Cancellation Overflow interrupt
+//	max30102_set_die_temp_rdy(obj, 0);     // Disable Die Temp Ready interrupt
+//
+//	// 9. Ensure die temperature measurement is disabled (as per request)
+//	// After reset, DIE_TEMP_CONFIG register is 0x00, so TEMP_EN is already 0.
+//	max30102_set_die_temp_en(obj, 0);
+
+
+
+	//------------------ DEBUG -----------------------
+	  // Initiation
+	  max30102_init(obj, hi2c);
+	  max30102_reset(obj);
+	  max30102_clear_fifo(obj);
+	  max30102_set_fifo_config(obj, max30102_smp_ave_8, 1, 7);
+
+	  // Sensor settings
+	  max30102_set_led_pulse_width(obj, max30102_pw_16_bit);
+	  max30102_set_adc_resolution(obj, max30102_adc_2048);
+	  max30102_set_sampling_rate(obj, max30102_sr_800);
+	  max30102_set_led_current_1(obj, 6.2);
+	  max30102_set_led_current_2(obj, 6.2);
+
+	  // Enter SpO2 mode
+	  max30102_set_mode(obj, max30102_spo2);
+	  max30102_set_a_full(obj, 1);
+
+	  // Initiate 1 temperature measurement
+	  max30102_set_die_temp_en(obj, 1);
+	  max30102_set_die_temp_rdy(obj, 1);
+
+	  uint8_t en_reg[2] = {0};
+	  max30102_read(obj, 0x00, en_reg, 1);
+
+	//Enter measurement mode:
+	// Enter SpO2 mode
+	max30102_set_mode(obj, max30102_spo2);
+
+	//Enable the required interrupts:
+	// Enable FIFO_A_FULL interrupt
+	max30102_set_a_full(obj, 1);
+	// Enable die temperature measurement
+	max30102_set_die_temp_en(obj, 1);
+	// Enable DIE_TEMP_RDY interrupt
+	max30102_set_die_temp_rdy(obj, 1);
+}
+
+
+// helper: AC/DC on a buffer of uint32_t
+static void _calc_acdc(const uint32_t *buf, float *ac, float *dc) {
+    uint32_t mx = buf[0], mn = buf[0];
+    uint64_t sum = 0;
+    for (int i = 0; i < MAX30102_N_SAMPLES; i++) {
+        uint32_t v = buf[i];
+        if (v > mx) mx = v;
+        if (v < mn) mn = v;
+        sum += v;
+    }
+    *ac = (float)(mx - mn);
+    *dc = (float)sum / MAX30102_N_SAMPLES;
+}
+
+// very crude peak‐count on IR to get MAX30102_hr
+static uint8_t _detect_MAX30102_hr(const uint32_t *ir) {
+    // tMAX30102_hreshold at midway
+    uint32_t mx = ir[0], mn = ir[0];
+    for (int i = 1; i < MAX30102_N_SAMPLES; i++) {
+        if (ir[i] > mx) mx = ir[i];
+        if (ir[i] < mn) mn = ir[i];
+    }
+    float tMAX30102_hr = (mx + mn) * 0.5f;
+
+    int peaks = 0;
+    for (int i = 1; i < MAX30102_N_SAMPLES - 1; i++) {
+        if (ir[i] > tMAX30102_hr && ir[i-1] <= tMAX30102_hr) peaks++;
+    }
+    // convert to BPM
+    float window_sec = MAX30102_N_SAMPLES / MAX30102_fs;
+    return (uint8_t)((peaks * 60.0f) / window_sec);
+}
+
+void Sensor_MAX30102_init(float sampling_rate_hz) {
+    MAX30102_fs = sampling_rate_hz;
+    last_MAX30102_hr   = 0;
+    last_MAX30102_spo2 = 0;
+}
+
+void Sensor_MAX30102_compute(max30102_t *sensor) {
+    // compute AC/DC for IR and Red
+    float ir_ac, ir_dc, red_ac, red_dc;
+    _calc_acdc(sensor->_ir_samples,  &ir_ac,  &ir_dc);
+    _calc_acdc(sensor->_red_samples, &red_ac, &red_dc);
+
+    // ratio‐of‐ratios for SpO₂
+    float R = (red_ac/red_dc) / (ir_ac/ir_dc);
+    // linear calibration — tweak these constants as needed
+    float MAX30102_spo2f = 110.0f - 25.0f * R;
+    if (MAX30102_spo2f > 100.0f) MAX30102_spo2f = 100.0f;
+    else if (MAX30102_spo2f < 0.0f) MAX30102_spo2f = 0.0f;
+    last_MAX30102_spo2 = (uint8_t)MAX30102_spo2f;
+
+    // heart rate from IR
+    last_MAX30102_hr = _detect_MAX30102_hr(sensor->_ir_samples);
+}
+
+uint8_t Sensor_MAX30102_get_hr(void) {
+    return last_MAX30102_hr;
+}
+
+uint8_t Sensor_MAX30102_get_spo2(void) {
+    return last_MAX30102_spo2;
+}

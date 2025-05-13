@@ -36,6 +36,8 @@
 #include "ble_comms.h"
 #include "common_defs.h"
 #include "display.h"
+#include "sensors.h"
+
 #include "max30102_for_stm32_hal.h"
 /* USER CODE END Includes */
 
@@ -70,9 +72,12 @@ volatile uint8_t messageReady = 0;
 extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 
 extern SmartWatchData_t SmartWatchData_handle;
-UI_Screen_State_t SmartWatchScreen_State;
+volatile UI_Screen_State_t SmartWatchScreen_State;
 
 max30102_t max30102;
+
+static volatile uint32_t lastBtnTick = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -174,7 +179,7 @@ int main(void)
 #endif
 
 #ifdef SCREEN_TEST
-	SmartWatchScreen_State = SCREEN_ENVIRONMENTAL;
+	SmartWatchScreen_State = SCREEN_CLOCK; // first screen
 	Display_Init(SmartWatchScreen_State);
 	ST7789_Test();
 #endif
@@ -256,8 +261,8 @@ int main(void)
 
 	  // Sensor settings
 	  max30102_set_led_pulse_width(&max30102, max30102_pw_16_bit);
-	  max30102_set_adc_resolution(&max30102, max30102_adc_2048);
-	  max30102_set_sampling_rate(&max30102, max30102_sr_800);
+	  max30102_set_adc_resolution(&max30102, max30102_adc_4096);
+	  max30102_set_sampling_rate(&max30102, max30102_sr_50);
 	  max30102_set_led_current_1(&max30102, 6.2);
 	  max30102_set_led_current_2(&max30102, 6.2);
 
@@ -283,7 +288,8 @@ int main(void)
 	max30102_set_die_temp_en(&max30102, 1);
 	// Enable DIE_TEMP_RDY interrupt
 	max30102_set_die_temp_rdy(&max30102, 1);
-	printf("test\r\n");
+
+	Sensor_MAX30102_init(50.0f);
 #endif
   /* USER CODE END 2 */
 
@@ -334,9 +340,8 @@ int main(void)
 
 
 #ifdef MPU6500_TEST
-	    read_mpu_data_example();
-	    printf("===================================\r\n");
-		HAL_Delay(1000);
+        Sensor_MPU6500_read_data();
+		HAL_Delay(100);
 
 #endif
 
@@ -346,9 +351,9 @@ int main(void)
 //	    	SmartWatchData_handle.pressure = 100.0f + 10.0f * (i % 5); // 100, 110, 120, 130, 140, repeat
 //	    	HAL_Delay(80);
 //	    }
-		SmartWatchData_handle.pressure += 1;
-		SmartWatchData_handle.heart_rate += 1;
-		SmartWatchData_handle.spo2 += 1;
+//		SmartWatchData_handle.pressure += 1;
+//		SmartWatchData_handle.heart_rate += 1;
+//		SmartWatchData_handle.spo2 += 1;
 		SmartWatchScreen_State = SCREEN_HEART_RATE;
 	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
 	    HAL_Delay(20);
@@ -358,8 +363,16 @@ int main(void)
 #ifdef MAX30102_TEST
 	    // If interrupt flag is active
 	    if (max30102_has_interrupt(&max30102))
+	    {
 	      // Run interrupt handler to read FIFO
 	      max30102_interrupt_handler(&max30102);
+//	      // after handler, your heart._ir_samples and _red_samples are updated:
+//	      Sensor_MAX30102_compute(&max30102);
+//	      // now you can grab
+//	      uint8_t bpm  = Sensor_MAX30102_get_hr();
+//	      uint8_t spO2 = Sensor_MAX30102_get_spo2();
+//	      printf("hey %u %u",bpm,spO2);
+	    }
 #endif
     /* USER CODE END WHILE */
 
@@ -444,13 +457,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin == BUTTON_BACK_Pin)
-    {
-
+    uint32_t now = HAL_GetTick();
+    if (now - lastBtnTick < 50) return;  // simple debounce
+    lastBtnTick = now;
+    if (GPIO_Pin == BUTTON_BACK_Pin) {
+        SmartWatchScreen_State = (SmartWatchScreen_State + NUM_SCREENS - 1) % NUM_SCREENS;
     }
-    else if (GPIO_Pin == BUTTON_NEXT_Pin)
-    {
-
+    else if (GPIO_Pin == BUTTON_NEXT_Pin) {
+        SmartWatchScreen_State = (SmartWatchScreen_State + 1) % NUM_SCREENS;
     }
     else if (GPIO_Pin == MAX30102_INT_Pin)
     {

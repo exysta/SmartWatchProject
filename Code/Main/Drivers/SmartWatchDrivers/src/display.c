@@ -82,8 +82,8 @@ void Display_DrawThermo(uint16_t x_center, uint16_t y_center)
 
 void Display_HeartRate(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
 {
-	uint8_t hr = SmartWatchData_handle.heart_rate;
-	uint16_t spo2 = SmartWatchData_handle.spo2;
+	uint8_t hr = pData->heart_rate;
+	uint16_t spo2 = pData->spo2;
 
 	char hr_buf[32];
 	char spo2_buf[32];
@@ -99,6 +99,78 @@ void Display_HeartRate(uint16_t x_center, uint16_t y_center,const SmartWatchData
 
 
 	Display_RenderAnimation(gif_center_x,gif_center_y,heart_animation_width,heart_animation_height,heart_gif_array,heart_gif_array_LEN,heart_gif_frame_pixel_count);
+}
+
+void Display_Clock(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
+{
+	uint16_t year = pData->gps_data.year;
+	uint8_t month = pData->gps_data.month;
+	uint8_t day = pData->gps_data.day;
+	uint8_t hour = pData->gps_data.hour;
+	uint8_t min = pData->gps_data.min;
+	uint8_t sec = pData->gps_data.sec;
+
+	hour = (hour +3 )%24; // for UTC
+	char date_buf[64];
+	char clock_buf[32];
+
+	snprintf(date_buf, sizeof(date_buf), "  %d. %u. %u", (unsigned) year, (unsigned) month, (unsigned) day);
+	snprintf(clock_buf, sizeof(clock_buf), " %u h %u min %u sec",  (unsigned) hour, (unsigned) min, (unsigned) sec);
+
+	//space between lines of text
+	int text_y_offset = 30;
+
+	ST7789_WriteString(x_center, y_center , date_buf, Font_11x18, GREEN, BLACK);
+	ST7789_WriteString(x_center, y_center + text_y_offset, clock_buf, Font_11x18, GREEN, BLACK);
+
+}
+
+
+
+void Display_Position(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
+{
+	int32_t lat = pData->gps_data.lat;
+	int32_t lon = pData->gps_data.lon;
+	int32_t height = pData->gps_data.height;
+
+
+	char pos_buf[80];
+	char height_buf[64];
+
+	snprintf(pos_buf, sizeof(pos_buf), "  latitude %ld longitude : %ld", lat, lon);
+	snprintf(height_buf, sizeof(height_buf), "  height %ld ", height);
+
+	//space between lines of text
+	int text_y_offset = 30;
+
+	ST7789_WriteString(x_center, y_center , pos_buf, Font_11x18, GREEN, BLACK);
+	ST7789_WriteString(x_center, y_center + text_y_offset, height_buf, Font_11x18, GREEN, BLACK);
+
+}
+
+void Display_Motion(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
+{
+	float accel_x = pData->accel_g[0][0];
+	float accel_y = pData->accel_g[0][1];
+	float accel_z = pData->accel_g[0][2];
+
+
+	float gyro_x = pData->gyro_dps[0][0];
+	float gyro_y = pData->gyro_dps[0][1];
+	float gyro_z = pData->gyro_dps[0][2];
+
+	char accel_buf[64];
+	char gyro_buf[64];
+
+	snprintf(accel_buf, sizeof(accel_buf), "  accel x:%.4f y :%.4f z: %.4f",  accel_x, accel_y, accel_z);
+	snprintf(gyro_buf, sizeof(gyro_buf), "  gyro x:%.4f y :%.4f z: %.4f",  gyro_x, gyro_y, gyro_z);
+
+	//space between lines of text
+	int text_y_offset = 30;
+
+	ST7789_WriteString(x_center, y_center , accel_buf, Font_11x18, GREEN, BLACK);
+	ST7789_WriteString(x_center, y_center + text_y_offset, gyro_buf, Font_11x18, GREEN, BLACK);
+
 }
 
 void Display_EnvironnementData(uint16_t x, uint16_t y,const SmartWatchData_t* pData)
@@ -163,6 +235,7 @@ void Display_RenderAnimation(uint16_t x_center, uint16_t y_center,uint16_t x_wid
 
 void Display_RenderClock(const SmartWatchData_t* pData)
 {
+	Display_Clock(40,60,pData);
 
 }
 
@@ -171,6 +244,10 @@ void Display_RenderEnvironmental(const SmartWatchData_t* pData)
 	Display_EnvironnementData(40,60,pData);
 }
 
+void Display_RenderMotion(const SmartWatchData_t* pData)
+{
+	Display_Motion(40,60,pData);
+}
 
 void Display_RenderHeartRate(const SmartWatchData_t* pData)
 {
@@ -180,7 +257,7 @@ void Display_RenderHeartRate(const SmartWatchData_t* pData)
 
 void Display_RenderGPS(const SmartWatchData_t* pData)
 {
-
+	Display_Position(40,50,pData);
 }
 
 
@@ -202,6 +279,9 @@ void Display_Update(UI_Screen_State_t screen, const SmartWatchData_t* pData) {
             break;
         case SCREEN_ENVIRONMENTAL:
             Display_RenderEnvironmental(pData);
+            break;
+        case SCREEN_MOTION:
+            Display_RenderMotion(pData);
             break;
         case SCREEN_HEART_RATE: // Example: Show static heart + text here
              Display_RenderHeartRate(pData); // Assuming this renders text + static heart
