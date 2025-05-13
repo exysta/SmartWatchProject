@@ -89,3 +89,10 @@ void Sensor_BMP280_init()
 			bme280p ? "BME280" : "BMP280");
 	HAL_UART_Transmit(&STLINK_UART, Data, size, 1000);
 }
+
+void Sensor_BMP280_read_data()
+{
+	bmp280_read_float(&bmp280, &SmartWatchData_handle.temperature, &SmartWatchData_handle.pressure, &SmartWatchData_handle.humidity);
+
+}
+

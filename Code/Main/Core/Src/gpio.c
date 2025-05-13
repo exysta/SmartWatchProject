@@ -57,8 +57,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED_SWD_Pin|LED_ERROR_Pin|LED_STATUS_Pin|LED_BLE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_GPS_Pin|LED_LCD_Pin|LED_BMP280_Pin|ST7789_RST_Pin
-                          |LED_MPUS6500_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_GPS_Pin|LED_LCD_Pin|LED_BMP280_Pin|LED_MPUS6500_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(ST7789_RST_GPIO_Port, ST7789_RST_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : MAX30102_INT_Pin BUTTON_NEXT_Pin */
   GPIO_InitStruct.Pin = MAX30102_INT_Pin|BUTTON_NEXT_Pin;
@@ -66,10 +68,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_MAX30102_Pin ST7789_DC_Pin ST7789_CS_Pin ST7789_BLK_Pin
-                           BLE_EN_Pin */
-  GPIO_InitStruct.Pin = LED_MAX30102_Pin|ST7789_DC_Pin|ST7789_CS_Pin|ST7789_BLK_Pin
-                          |BLE_EN_Pin;
+  /*Configure GPIO pins : LED_MAX30102_Pin ST7789_CS_Pin ST7789_BLK_Pin BLE_EN_Pin */
+  GPIO_InitStruct.Pin = LED_MAX30102_Pin|ST7789_CS_Pin|ST7789_BLK_Pin|BLE_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -90,6 +90,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ST7789_DC_Pin */
+  GPIO_InitStruct.Pin = ST7789_DC_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(ST7789_DC_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BUTTON_BACK_Pin */
   GPIO_InitStruct.Pin = BUTTON_BACK_Pin;

@@ -16,12 +16,12 @@
 #include "i2c.h"
 #include "usart.h"
 
-//#define BLE_TEST
+#define BLE_TEST
 //#define SCREEN_TEST
 //#define BME280
 //#define GPS_TEST
 //#define MPU6500_TEST
-#define MAX30102_TEST
+//#define MAX30102_TEST
 
 #define STLINK_UART huart4
 
@@ -31,6 +31,8 @@
 #define MPU6500_I2C hi2c1
 #define MAX30102_I2C hi2c3
 #define ST7789_SPI_PORT hspi2
+
+#define ST7789_BLK_PIN  ST7789_BLK_Pin
 
 #define BME280_ADDR 0x76
 #define RX_BUFFER_SIZE 256
@@ -54,8 +56,8 @@ typedef enum {
 typedef struct {
     // BMP280 Data
     float temperature;
-    float pressure;
-    float humidity; // Note: BMP280 doesn't measure humidity, maybe BME280? Or remove.
+    float pressure; //in PA
+    float humidity; //
     int bmp_data_valid;
 
     // MPU6500 Data

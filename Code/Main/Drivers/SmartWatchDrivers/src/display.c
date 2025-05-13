@@ -39,6 +39,8 @@ static uint32_t s_animation_last_update_tick = 0;
 void Display_Init(UI_Screen_State_t screenState)
 {
 	ST7789_Init();
+	HAL_GPIO_WritePin(ST7789_BLK_GPIO_Port  , ST7789_BLK_Pin, GPIO_PIN_SET);
+
 	previous_screenState = screenState;
 	current_screenState = screenState;
 }

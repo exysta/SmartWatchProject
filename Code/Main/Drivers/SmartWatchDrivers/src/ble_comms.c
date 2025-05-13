@@ -38,13 +38,13 @@ void sendATCommand(UART_HandleTypeDef *huart, char *command)
 
 void configureHM10()
 {
-	sendATCommand(&BLE_UART, "AT");          // Basic test - should return "OK"
+	  sendATCommand(&BLE_UART, "AT");          // Basic test - should return "OK"
 //	  // First connect at current baud rate (likely 9600)
-//	  sendATCommand(&huart4, "AT+VERSION");  // Get firmware version
-//	  sendATCommand(&huart4, "AT+LADDR");    // Get Bluetooth MAC address
-	  sendATCommand(&huart4, "AT+NAMESmartProject");     // Check current device name
-	  sendATCommand(&huart4, "AT+ROLE0");    // Set to slave mode
-	  sendATCommand(&huart4, "AT+ADVI0");    // Set to 100ms for quick discovery
+//	  sendATCommand(&BLE_UART, "AT+VERSION");  // Get firmware version
+//	  sendATCommand(&BLE_UART, "AT+LADDR");    // Get Bluetooth MAC address
+	  sendATCommand(&BLE_UART, "AT+NAMESmartProjectTest");     // Check current device name
+	  sendATCommand(&BLE_UART, "AT+ROLE0");    // Set to slave mode
+	  sendATCommand(&BLE_UART, "AT+ADVI0");    // Set to 100ms for quick discovery
 
 }
 
@@ -54,4 +54,9 @@ void startUartReception(UART_HandleTypeDef *huart)
 	HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
 	// Optionally disable half-transfer interrupt to reduce overhead
 	__HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+}
+
+HAL_StatusTypeDef BLE_Send(UART_HandleTypeDef *huart, uint8_t *data, uint16_t len, uint32_t timeout)
+{
+    return HAL_UART_Transmit(huart, data, len, timeout);
 }

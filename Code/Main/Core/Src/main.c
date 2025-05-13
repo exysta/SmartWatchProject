@@ -71,6 +71,7 @@ extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 
 extern SmartWatchData_t SmartWatchData_handle;
 UI_Screen_State_t SmartWatchScreen_State;
+
 max30102_t max30102;
 /* USER CODE END PV */
 
@@ -130,32 +131,19 @@ int main(void)
 
 #ifdef BLE_TEST
 
-  configureHM10();
-  startUartReception(&BLE_UART);
+  //configureHM10();
+  char msg[] = "Hello from STM32!\n";
+  if (BLE_Send(&BLE_UART, (uint8_t*)msg, strlen(msg), 100) != HAL_OK)
+  {
+      // Handle error
+	  HAL_Delay(20);
+  }
+
+//  startUartReception(&BLE_UART);
 #endif
 
 #ifdef BME280
-	uint8_t txData = 0xD0;  // Array with a single element
-	// Command to send
-	uint8_t rxData[1];           // Buffer to store response
-
-	HAL_I2C_Master_Transmit(&BME280_I2C, BME280_ADDR, &txData, 1, 100);
-	HAL_StatusTypeDef status = HAL_I2C_Master_Receive(&BME280_I2C, BME280_ADDR, rxData, 1, 100);
-	printf("Received: 0x%02X \r\n", rxData[0]);  // Print response
-
-
-	bmp280_init_default_params(&bmp280.params);
-	bmp280.addr = BMP280_I2C_ADDRESS_0;
-	bmp280.i2c = &BME280_I2C;
-
-	while (!bmp280_init(&bmp280, &bmp280.params)) {
-		size = sprintf((char *)Data, "BMP280 initialization failed\r\n");
-		HAL_UART_Transmit(&huart3, Data, size, 1000);
-		HAL_Delay(2000);
-	}
-	bool bme280p = bmp280.id == BME280_CHIP_ID;
-	size = sprintf((char *)Data, "BMP280: found %s \r\n", bme280p ? "BME280" : "BMP280");
-	HAL_UART_Transmit(&huart3, Data, size, 1000);
+  Sensor_BMP280_init();
 #endif
 
 #ifdef GPS_TEST
@@ -188,11 +176,11 @@ int main(void)
 #ifdef SCREEN_TEST
 	SmartWatchScreen_State = SCREEN_ENVIRONMENTAL;
 	Display_Init(SmartWatchScreen_State);
-
+	ST7789_Test();
 #endif
 
 
-#ifdef MAX30102_I2C
+#ifdef MAX30102_TEST
 	// 7-bit I2C address of the MAX30102 is 0x57, shift left for HAL (8-bit format)
 	#define MAX30102_ADDR   (0x57 << 1)
 
@@ -305,24 +293,9 @@ int main(void)
   {
 #ifdef BME280
 
-		HAL_Delay(100);
-
-		while (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity)) {
-			printf("Temperature/pressure reading failed\r\n");
-			HAL_Delay(2000);
-		}
-
-		printf("Pressure: %.2f Pa, Temperature: %.2f C \r\n", pressure, temperature);
-
-		if (bme280p) {
-			printf(", Humidity: %.2f\r\n", humidity);
-		} else {
-			printf("\r\n");
-		}
-
-		HAL_Delay(2000);
+	  	Sensor_BMP280_read_data();
+		HAL_Delay(500);
 #endif
-
 
 #ifdef GPS_TEST
 		if ((HAL_GetTick() - Timer) > 1000) {
@@ -332,21 +305,21 @@ int main(void)
 			GNSS_GetPVTData(&GNSS_Handle);
 			GNSS_ParseBuffer(&GNSS_Handle);
 			HAL_Delay(250);
-			GNSS_SetMode(&GNSS_Handle,Automotiv);
+			GNSS_SetMode(&GNSS_Handle,Stationary);
 			HAL_Delay(250);
-			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
-			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
-			printf("Status of fix: %d \r\n", GNSS_Handle.fixType);
-			printf("Latitude: %f \r\n", GNSS_Handle.fLat);
-			printf("Longitude: %f \r\n",(float) GNSS_Handle.lon / 10000000.0);
-			printf("Height above ellipsoid: %d \r\n", GNSS_Handle.height);
-			printf("Height above mean sea level: %d \r\n", GNSS_Handle.hMSL);
-			printf("Ground Speed (2-D): %d \r\n", GNSS_Handle.gSpeed);
-			printf("Unique ID: %04X %04X %04X %04X %04X \n\r",
-					GNSS_Handle.uniqueID[0], GNSS_Handle.uniqueID[1],
-					GNSS_Handle.uniqueID[2], GNSS_Handle.uniqueID[3],
-					GNSS_Handle.uniqueID[4], GNSS_Handle.uniqueID[5]);
-			printf("--------------------------------------\r\n" );
+//			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
+//			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
+//			printf("Status of fix: %d \r\n", GNSS_Handle.fixType);
+//			printf("Latitude: %f \r\n", GNSS_Handle.fLat);
+//			printf("Longitude: %f \r\n",(float) GNSS_Handle.lon / 10000000.0);
+//			printf("Height above ellipsoid: %d \r\n", GNSS_Handle.height);
+//			printf("Height above mean sea level: %d \r\n", GNSS_Handle.hMSL);
+//			printf("Ground Speed (2-D): %d \r\n", GNSS_Handle.gSpeed);
+//			printf("Unique ID: %04X %04X %04X %04X %04X \n\r",
+//					GNSS_Handle.uniqueID[0], GNSS_Handle.uniqueID[1],
+//					GNSS_Handle.uniqueID[2], GNSS_Handle.uniqueID[3],
+//					GNSS_Handle.uniqueID[4], GNSS_Handle.uniqueID[5]);
+//			printf("--------------------------------------\r\n" );
 			Timer = HAL_GetTick();
 		}
 #endif
@@ -382,7 +355,7 @@ int main(void)
 		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
-#ifdef MAX30102_I2C
+#ifdef MAX30102_TEST
 	    // If interrupt flag is active
 	    if (max30102_has_interrupt(&max30102))
 	      // Run interrupt handler to read FIFO
