@@ -305,7 +305,7 @@ int main(void)
 			GNSS_GetPVTData(&GNSS_Handle);
 			GNSS_ParseBuffer(&GNSS_Handle);
 			HAL_Delay(250);
-			GNSS_SetMode(&GNSS_Handle,Stationary);
+			GNSS_SetMode(&GNSS_Handle,Wirst);
 			HAL_Delay(250);
 //			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
 //			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
