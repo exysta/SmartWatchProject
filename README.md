@@ -38,7 +38,6 @@ The design centers around the STM32L476RCT6 microcontroller, ensuring low power 
 - **GPS Module:** NEO-7M for precise location tracking
 - **Power Management:** Voltage regulators (LM317) and a power switch optimize energy efficiency
 
-> **Tip:** Add a block diagram image (e.g., place it as `docs/images/block_diagram.png`) and update the README with the image link.
 
 ## Software Architecture
 
@@ -68,7 +67,6 @@ Testing covers multiple aspects of the system to ensure reliability:
 - **Communication Tests:** Ensure robust Bluetooth pairing and accurate GPS data reception.
 - **System Integration:** Confirm end-to-end functionality, including data flow from sensors to display and wireless transmission.
 
-For further details, see `TESTING.md`.
 
 ## Getting Started
 
