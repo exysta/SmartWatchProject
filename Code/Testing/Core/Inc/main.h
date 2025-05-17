@@ -91,6 +91,8 @@ void Error_Handler(void);
 #define ST7789_RST_GPIO_Port GPIOD
 #define ST7789_CS_Pin GPIO_PIN_9
 #define ST7789_CS_GPIO_Port GPIOG
+#define ST7789_BLK_Pin GPIO_PIN_4
+#define ST7789_BLK_GPIO_Port GPIOB
 #define MAX30102_SCL_Pin GPIO_PIN_6
 #define MAX30102_SCL_GPIO_Port GPIOB
 #define MAX30102_SDA_Pin GPIO_PIN_7

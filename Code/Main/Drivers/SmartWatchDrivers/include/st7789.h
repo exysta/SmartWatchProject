@@ -9,10 +9,10 @@
 extern SPI_HandleTypeDef ST7789_SPI_PORT;
 
 /* choose whether use DMA or not */
-//#define USE_DMA
+#define USE_DMA
 
 /* If u need CS control, comment below*/
-//#define CFG_NO_CS
+#define CFG_NO_CS
 
 /* Pin connection*/
 #define ST7789_RST_PORT ST7789_RST_GPIO_Port

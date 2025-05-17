@@ -34,13 +34,27 @@ static UI_Screen_State_t current_screenState;
 // --- Static variables for animation state ---
 static uint8_t  s_animation_current_frame = 0;
 static uint32_t s_animation_last_update_tick = 0;
+
+
 #define ANIMATION_FRAME_DELAY_MS 80 // Adjust for desired speed (milliseconds)
 
 void Display_Init(UI_Screen_State_t screenState)
 {
 	ST7789_Init();
 	HAL_GPIO_WritePin(ST7789_BLK_GPIO_Port  , ST7789_BLK_Pin, GPIO_PIN_SET);
+    // 2) Disable SPI2 before touching CR2
+    __HAL_SPI_DISABLE(&ST7789_SPI_PORT);
 
+    // 3) Turn on hardware‐NSS pulse management (NSSP) in CR2
+    //    and be sure SSOE (NSS output enable) is set too:
+    MODIFY_REG(
+      ST7789_SPI_PORT.Instance->CR2,
+      SPI_CR2_NSSP  | SPI_CR2_SSOE,    // mask
+      SPI_CR2_NSSP  | SPI_CR2_SSOE     // value
+    );
+
+    // 4) Re-enable SPI2 so your change takes effect
+    __HAL_SPI_ENABLE(&ST7789_SPI_PORT);
 	previous_screenState = screenState;
 	current_screenState = screenState;
 }
@@ -129,16 +143,16 @@ void Display_Clock(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* 
 
 void Display_Position(uint16_t x_center, uint16_t y_center,const SmartWatchData_t* pData)
 {
-	int32_t lat = pData->gps_data.lat;
-	int32_t lon = pData->gps_data.lon;
-	int32_t height = pData->gps_data.height;
+	int32_t lat = pData->gps_data.fLat;
+	int32_t lon = pData->gps_data.fLon;
+	int32_t altitude = pData->gps_data.hMSL / 1000.0f;;
 
 
 	char pos_buf[80];
 	char height_buf[64];
 
 	snprintf(pos_buf, sizeof(pos_buf), "  latitude %ld longitude : %ld", lat, lon);
-	snprintf(height_buf, sizeof(height_buf), "  height %ld ", height);
+	snprintf(height_buf, sizeof(height_buf), "  height %ld ", altitude);
 
 	//space between lines of text
 	int text_y_offset = 30;

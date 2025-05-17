@@ -14,7 +14,8 @@ C_SRCS += \
 ../Drivers/SmartWatchDrivers/src/input.c \
 ../Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.c \
 ../Drivers/SmartWatchDrivers/src/sensors.c \
-../Drivers/SmartWatchDrivers/src/st7789.c 
+../Drivers/SmartWatchDrivers/src/st7789.c \
+../Drivers/SmartWatchDrivers/src/uart_comms.c 
 
 OBJS += \
 ./Drivers/SmartWatchDrivers/src/GNSS.o \
@@ -26,7 +27,8 @@ OBJS += \
 ./Drivers/SmartWatchDrivers/src/input.o \
 ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.o \
 ./Drivers/SmartWatchDrivers/src/sensors.o \
-./Drivers/SmartWatchDrivers/src/st7789.o 
+./Drivers/SmartWatchDrivers/src/st7789.o \
+./Drivers/SmartWatchDrivers/src/uart_comms.o 
 
 C_DEPS += \
 ./Drivers/SmartWatchDrivers/src/GNSS.d \
@@ -38,7 +40,8 @@ C_DEPS += \
 ./Drivers/SmartWatchDrivers/src/input.d \
 ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.d \
 ./Drivers/SmartWatchDrivers/src/sensors.d \
-./Drivers/SmartWatchDrivers/src/st7789.d 
+./Drivers/SmartWatchDrivers/src/st7789.d \
+./Drivers/SmartWatchDrivers/src/uart_comms.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -48,7 +51,7 @@ Drivers/SmartWatchDrivers/src/%.o Drivers/SmartWatchDrivers/src/%.su Drivers/Sma
 clean: clean-Drivers-2f-SmartWatchDrivers-2f-src
 
 clean-Drivers-2f-SmartWatchDrivers-2f-src:
-	-$(RM) ./Drivers/SmartWatchDrivers/src/GNSS.cyclo ./Drivers/SmartWatchDrivers/src/GNSS.d ./Drivers/SmartWatchDrivers/src/GNSS.o ./Drivers/SmartWatchDrivers/src/GNSS.su ./Drivers/SmartWatchDrivers/src/MPU6500_driver.cyclo ./Drivers/SmartWatchDrivers/src/MPU6500_driver.d ./Drivers/SmartWatchDrivers/src/MPU6500_driver.o ./Drivers/SmartWatchDrivers/src/MPU6500_driver.su ./Drivers/SmartWatchDrivers/src/ble_comms.cyclo ./Drivers/SmartWatchDrivers/src/ble_comms.d ./Drivers/SmartWatchDrivers/src/ble_comms.o ./Drivers/SmartWatchDrivers/src/ble_comms.su ./Drivers/SmartWatchDrivers/src/bmp280.cyclo ./Drivers/SmartWatchDrivers/src/bmp280.d ./Drivers/SmartWatchDrivers/src/bmp280.o ./Drivers/SmartWatchDrivers/src/bmp280.su ./Drivers/SmartWatchDrivers/src/display.cyclo ./Drivers/SmartWatchDrivers/src/display.d ./Drivers/SmartWatchDrivers/src/display.o ./Drivers/SmartWatchDrivers/src/display.su ./Drivers/SmartWatchDrivers/src/fonts.cyclo ./Drivers/SmartWatchDrivers/src/fonts.d ./Drivers/SmartWatchDrivers/src/fonts.o ./Drivers/SmartWatchDrivers/src/fonts.su ./Drivers/SmartWatchDrivers/src/input.cyclo ./Drivers/SmartWatchDrivers/src/input.d ./Drivers/SmartWatchDrivers/src/input.o ./Drivers/SmartWatchDrivers/src/input.su ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.cyclo ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.d ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.o ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.su ./Drivers/SmartWatchDrivers/src/sensors.cyclo ./Drivers/SmartWatchDrivers/src/sensors.d ./Drivers/SmartWatchDrivers/src/sensors.o ./Drivers/SmartWatchDrivers/src/sensors.su ./Drivers/SmartWatchDrivers/src/st7789.cyclo ./Drivers/SmartWatchDrivers/src/st7789.d ./Drivers/SmartWatchDrivers/src/st7789.o ./Drivers/SmartWatchDrivers/src/st7789.su
+	-$(RM) ./Drivers/SmartWatchDrivers/src/GNSS.cyclo ./Drivers/SmartWatchDrivers/src/GNSS.d ./Drivers/SmartWatchDrivers/src/GNSS.o ./Drivers/SmartWatchDrivers/src/GNSS.su ./Drivers/SmartWatchDrivers/src/MPU6500_driver.cyclo ./Drivers/SmartWatchDrivers/src/MPU6500_driver.d ./Drivers/SmartWatchDrivers/src/MPU6500_driver.o ./Drivers/SmartWatchDrivers/src/MPU6500_driver.su ./Drivers/SmartWatchDrivers/src/ble_comms.cyclo ./Drivers/SmartWatchDrivers/src/ble_comms.d ./Drivers/SmartWatchDrivers/src/ble_comms.o ./Drivers/SmartWatchDrivers/src/ble_comms.su ./Drivers/SmartWatchDrivers/src/bmp280.cyclo ./Drivers/SmartWatchDrivers/src/bmp280.d ./Drivers/SmartWatchDrivers/src/bmp280.o ./Drivers/SmartWatchDrivers/src/bmp280.su ./Drivers/SmartWatchDrivers/src/display.cyclo ./Drivers/SmartWatchDrivers/src/display.d ./Drivers/SmartWatchDrivers/src/display.o ./Drivers/SmartWatchDrivers/src/display.su ./Drivers/SmartWatchDrivers/src/fonts.cyclo ./Drivers/SmartWatchDrivers/src/fonts.d ./Drivers/SmartWatchDrivers/src/fonts.o ./Drivers/SmartWatchDrivers/src/fonts.su ./Drivers/SmartWatchDrivers/src/input.cyclo ./Drivers/SmartWatchDrivers/src/input.d ./Drivers/SmartWatchDrivers/src/input.o ./Drivers/SmartWatchDrivers/src/input.su ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.cyclo ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.d ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.o ./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.su ./Drivers/SmartWatchDrivers/src/sensors.cyclo ./Drivers/SmartWatchDrivers/src/sensors.d ./Drivers/SmartWatchDrivers/src/sensors.o ./Drivers/SmartWatchDrivers/src/sensors.su ./Drivers/SmartWatchDrivers/src/st7789.cyclo ./Drivers/SmartWatchDrivers/src/st7789.d ./Drivers/SmartWatchDrivers/src/st7789.o ./Drivers/SmartWatchDrivers/src/st7789.su ./Drivers/SmartWatchDrivers/src/uart_comms.cyclo ./Drivers/SmartWatchDrivers/src/uart_comms.d ./Drivers/SmartWatchDrivers/src/uart_comms.o ./Drivers/SmartWatchDrivers/src/uart_comms.su
 
 .PHONY: clean-Drivers-2f-SmartWatchDrivers-2f-src
 

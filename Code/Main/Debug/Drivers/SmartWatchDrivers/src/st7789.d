@@ -35,7 +35,9 @@ Drivers/SmartWatchDrivers/src/st7789.o: \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/common_defs.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/MPU6500_driver.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/GNSS.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h
+ ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/st7789.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/fonts.h:
 ../Core/Inc/main.h:
@@ -75,3 +77,5 @@ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/bmp280.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Main/Drivers/SmartWatchDrivers/include/max30102_for_stm32_hal.h:

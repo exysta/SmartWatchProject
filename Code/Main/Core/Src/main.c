@@ -37,7 +37,7 @@
 #include "common_defs.h"
 #include "display.h"
 #include "sensors.h"
-
+#include "uart_comms.h"
 #include "max30102_for_stm32_hal.h"
 /* USER CODE END Includes */
 
@@ -181,7 +181,7 @@ int main(void)
 #ifdef SCREEN_TEST
 	SmartWatchScreen_State = SCREEN_CLOCK; // first screen
 	Display_Init(SmartWatchScreen_State);
-	ST7789_Test();
+//	ST7789_Test();
 #endif
 
 
@@ -291,6 +291,11 @@ int main(void)
 
 	Sensor_MAX30102_init(50.0f);
 #endif
+	//init
+	Sensor_SmartWatch_init(&SmartWatchData_handle);
+	SmartWatchScreen_State = SCREEN_CLOCK; // first screen
+	Display_Init(SmartWatchScreen_State);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -304,7 +309,8 @@ int main(void)
 #endif
 
 #ifdef GPS_TEST
-		if ((HAL_GetTick() - Timer) > 1000) {
+		if ((HAL_GetTick() - Timer) > 1000)
+		{
 			GNSS_GetUniqID(&GNSS_Handle);
 			GNSS_ParseBuffer(&GNSS_Handle);
 			HAL_Delay(250);
@@ -354,9 +360,10 @@ int main(void)
 //		SmartWatchData_handle.pressure += 1;
 //		SmartWatchData_handle.heart_rate += 1;
 //		SmartWatchData_handle.spo2 += 1;
-		SmartWatchScreen_State = SCREEN_HEART_RATE;
-	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
-	    HAL_Delay(20);
+		ST7789_WriteString(10, 20, "Speed Test", Font_11x18, RED, WHITE);
+
+//	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
+//	    HAL_Delay(20);
 		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
@@ -374,6 +381,8 @@ int main(void)
 //	      printf("hey %u %u",bpm,spO2);
 	    }
 #endif
+	    Sensor_SmartWatch_update(&SmartWatchData_handle);
+	    Sensor_SmartWatch_log(&SmartWatchData_handle);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -455,20 +464,29 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     }
 }
 
+//------------------------------------------------------------------------------
+// EXTI callback (button presses and sensor interrupts)
+//------------------------------------------------------------------------------
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     uint32_t now = HAL_GetTick();
-    if (now - lastBtnTick < 50) return;  // simple debounce
+    static uint32_t lastBtnTick = 0;
+
+    if (now - lastBtnTick < 50) {
+        return;  // debounce
+    }
     lastBtnTick = now;
+
     if (GPIO_Pin == BUTTON_BACK_Pin) {
         SmartWatchScreen_State = (SmartWatchScreen_State + NUM_SCREENS - 1) % NUM_SCREENS;
+        SendScreenState(&STLINK_UART, SmartWatchScreen_State);
     }
     else if (GPIO_Pin == BUTTON_NEXT_Pin) {
         SmartWatchScreen_State = (SmartWatchScreen_State + 1) % NUM_SCREENS;
+        SendScreenState(&STLINK_UART, SmartWatchScreen_State);
     }
-    else if (GPIO_Pin == MAX30102_INT_Pin)
-    {
-    	max30102_on_interrupt(&max30102);
+    else if (GPIO_Pin == MAX30102_INT_Pin) {
+        max30102_on_interrupt(&max30102);
     }
 }
 /* USER CODE END 4 */

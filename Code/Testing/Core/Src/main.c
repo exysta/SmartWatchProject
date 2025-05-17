@@ -201,7 +201,7 @@ int main(void)
 #endif
 
 
-#ifdef MAX30102_I2C
+#ifdef MAX30102_TEST
 	// 7-bit I2C address of the MAX30102 is 0x57, shift left for HAL (8-bit format)
 	#define MAX30102_ADDR   (0x57 << 1)
 
@@ -391,7 +391,7 @@ int main(void)
 		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
-#ifdef MAX30102_I2C
+#ifdef MAX30102_TEST
 	    // If interrupt flag is active
 	    if (max30102_has_interrupt(&max30102))
 	      // Run interrupt handler to read FIFO

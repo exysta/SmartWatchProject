@@ -15,9 +15,11 @@
 #include "GNSS.h"
 #include "i2c.h"
 #include "usart.h"
+#include "bmp280.h"
+#include "max30102_for_stm32_hal.h"
 
 //#define BLE_TEST
-#define SCREEN_TEST
+//#define SCREEN_TEST
 //#define BME280
 //#define GPS_TEST
 //#define MPU6500_TEST
@@ -55,6 +57,7 @@ typedef enum {
 // Structure to hold all relevant sensor data
 typedef struct {
     // BMP280 Data
+	BMP280_HandleTypedef bmp280;
     float temperature;
     float pressure; //in PA
     float humidity; //
@@ -68,13 +71,24 @@ typedef struct {
     int mpu_data_valid;
 
     // MAX30102 Data
+    max30102_t max30102;
     int16_t heart_rate;
     float spo2;
 
     // GNSS Data (using struct from GNSS.h)
     GNSS_StateHandle gps_data;
-    // bool gps_fix_valid; // This might be within GPS_t already
+    uint32_t         GNSS_Timer;
 
+    // higher‐level outputs (add these):
+    float    latitude;
+    float    longitude;
+    float    altitude;
+    uint16_t year, month, day;
+    uint8_t  hour, minute, second;
+    uint8_t  gps_fix_valid;
+    // in your SmartWatchData_t struct
+    uint32_t gnss_nextRequestTick;
+    uint8_t  gnss_state;      // 0 = idle, 1 = waiting for reply
 } SmartWatchData_t;
 
 #endif /* INC_COMMON_DEFS_H_ */

@@ -138,7 +138,7 @@ void ST7789_Init(void)
 	#endif
 	HAL_Delay(10);
     ST7789_RST_Clr();
-    HAL_Delay(10);
+    HAL_Delay(20);
     ST7789_RST_Set();
     HAL_Delay(20);
 
@@ -189,7 +189,7 @@ void ST7789_Init(void)
 
 	HAL_Delay(50);
 	ST7789_Fill_Color(BLACK);				//	Fill with Black.
-	HAL_Delay(50);
+	HAL_Delay(75);
 
 }
 

@@ -57,10 +57,8 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED_SWD_Pin|LED_ERROR_Pin|LED_STATUS_Pin|LED_BLE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_GPS_Pin|LED_LCD_Pin|LED_BMP280_Pin|LED_MPUS6500_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(ST7789_RST_GPIO_Port, ST7789_RST_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, LED_GPS_Pin|LED_LCD_Pin|LED_BMP280_Pin|ST7789_RST_Pin
+                          |LED_MPUS6500_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : MAX30102_INT_Pin */
   GPIO_InitStruct.Pin = MAX30102_INT_Pin;

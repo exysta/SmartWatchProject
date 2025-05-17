@@ -39,3 +39,4 @@
 "./Drivers/SmartWatchDrivers/src/max30102_for_stm32_hal.o"
 "./Drivers/SmartWatchDrivers/src/sensors.o"
 "./Drivers/SmartWatchDrivers/src/st7789.o"
+"./Drivers/SmartWatchDrivers/src/uart_comms.o"
