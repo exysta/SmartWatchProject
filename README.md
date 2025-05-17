@@ -19,8 +19,10 @@ This repository hosts the source code and technical documentation for the SmartW
 ```
 smartwatch/
 ├── hardware/         # Schematics, PCB design files, and hardware documentation
-├── software/         # Source code, drivers, and firmware modules
+├── Code/         # Source code, drivers, and firmware modules
 ├── docs/             # Detailed technical documentation, testing procedures, cost calculations, etc.
+├── Ressources/         # GIF used for screen animation
+
 └── README.md         # This file
 ```
 
@@ -47,7 +49,6 @@ The firmware is organized into modular APIs that manage:
 - **Bluetooth Communication:** Data exchange over BLE.
 - **User Input:** Button handling for reset and display navigation.
 - **Sensor Data Acquisition:** Interfaces for reading data via I2C and SPI.
-- **Peripheral Drivers:** SPI and I2C drivers for smooth communication.
 
 Upon startup, the system performs a handshake with each module. Once all components are verified, the main loop continuously:
 
@@ -72,28 +73,16 @@ Testing covers multiple aspects of the system to ensure reliability:
 
 1. **Clone the Repository:**
    ```sh
-   git clone https://github.com/your-username/smartwatch.git
-   cd smartwatch
+   git clone https://github.com/exysta/SmartWatchProject.git
+   cd SmartWatchProject
    ```
-2. **Hardware Setup:**
-   - Refer to the `/hardware` folder for PCB schematics and design files.
-3. **Build the Firmware:**
+2. **Build the Firmware:**
    - Open the project in STM32CubeIDE or your preferred environment.
-   - Compile the project using:
-     ```sh
-     make
-     ```
+   - Compile the project 
 4. **Flash the Firmware:**
    - Use an ST-LINK/V2 programmer to flash the firmware onto the STM32 MCU.
-   - Follow the instructions in `/hardware/programming_guide.pdf` for detailed steps.
 
-## Contributing
 
-Contributions are welcome! Please review `CONTRIBUTING.md` for guidelines on how to contribute to this project.
-
-## License
-
-This project is licensed under the MIT License. See `LICENSE` for more information.
 
 ## Acknowledgments
 
