@@ -19,8 +19,10 @@ This repository hosts the source code and technical documentation for the SmartW
 ```
 smartwatch/
 ├── hardware/         # Schematics, PCB design files, and hardware documentation
-├── software/         # Source code, drivers, and firmware modules
+├── Code/         # Source code, drivers, and firmware modules
 ├── docs/             # Detailed technical documentation, testing procedures, cost calculations, etc.
+├── Ressources/         # GIF used for screen animation
+
 └── README.md         # This file
 ```
 
@@ -38,7 +40,6 @@ The design centers around the STM32L476RCT6 microcontroller, ensuring low power 
 - **GPS Module:** NEO-7M for precise location tracking
 - **Power Management:** Voltage regulators (LM317) and a power switch optimize energy efficiency
 
-> **Tip:** Add a block diagram image (e.g., place it as `docs/images/block_diagram.png`) and update the README with the image link.
 
 ## Software Architecture
 
@@ -48,7 +49,6 @@ The firmware is organized into modular APIs that manage:
 - **Bluetooth Communication:** Data exchange over BLE.
 - **User Input:** Button handling for reset and display navigation.
 - **Sensor Data Acquisition:** Interfaces for reading data via I2C and SPI.
-- **Peripheral Drivers:** SPI and I2C drivers for smooth communication.
 
 Upon startup, the system performs a handshake with each module. Once all components are verified, the main loop continuously:
 
@@ -68,34 +68,21 @@ Testing covers multiple aspects of the system to ensure reliability:
 - **Communication Tests:** Ensure robust Bluetooth pairing and accurate GPS data reception.
 - **System Integration:** Confirm end-to-end functionality, including data flow from sensors to display and wireless transmission.
 
-For further details, see `TESTING.md`.
 
 ## Getting Started
 
 1. **Clone the Repository:**
    ```sh
-   git clone https://github.com/your-username/smartwatch.git
-   cd smartwatch
+   git clone https://github.com/exysta/SmartWatchProject.git
+   cd SmartWatchProject
    ```
-2. **Hardware Setup:**
-   - Refer to the `/hardware` folder for PCB schematics and design files.
-3. **Build the Firmware:**
+2. **Build the Firmware:**
    - Open the project in STM32CubeIDE or your preferred environment.
-   - Compile the project using:
-     ```sh
-     make
-     ```
+   - Compile the project 
 4. **Flash the Firmware:**
    - Use an ST-LINK/V2 programmer to flash the firmware onto the STM32 MCU.
-   - Follow the instructions in `/hardware/programming_guide.pdf` for detailed steps.
 
-## Contributing
 
-Contributions are welcome! Please review `CONTRIBUTING.md` for guidelines on how to contribute to this project.
-
-## License
-
-This project is licensed under the MIT License. See `LICENSE` for more information.
 
 ## Acknowledgments
 
