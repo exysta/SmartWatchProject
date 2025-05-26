@@ -35,10 +35,11 @@ Drivers/SmartWatchDrivers/CustomDrivers/sensors.o: \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/bmp280.h \
  ../Drivers/SmartWatchDrivers/CustomDrivers/sensors.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.h \
+ ../Core/Inc/main.h \
  ../Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h \
- ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/main.h \
- ../Core/Inc/usart.h
+ ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/usart.h
 ../Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -74,9 +75,10 @@ Drivers/SmartWatchDrivers/CustomDrivers/sensors.o: \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/bmp280.h:
 ../Drivers/SmartWatchDrivers/CustomDrivers/sensors.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.h:
+../Core/Inc/main.h:
 ../Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h:
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h:
-../Core/Inc/main.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:

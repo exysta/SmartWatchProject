@@ -37,7 +37,9 @@
 #include "ble_comms.h"
 #include "common_defs.h"
 #include "display.h"
-#include "max30102_for_stm32_hal.h";
+#include "max30102_for_stm32_hal.h"
+#include "sensors.h"
+
 
 /* USER CODE END Includes */
 
@@ -261,7 +263,7 @@ int main(void)
 	        {
 	            err = HAL_I2C_GetError(&MAX30102_I2C);
 	            // err == HAL_I2C_ERROR_NONE usually means NACK
-	            printf("I2C: 0x%02X no ACK (err=0x%lX)\r\n", addr, err);
+	            //printf("I2C: 0x%02X no ACK (err=0x%lX)\r\n", addr, err);
 	        }
 	        HAL_Delay(5);  // give time for UART to flush
 	    }
@@ -269,42 +271,9 @@ int main(void)
 	}
 //	HAL_StatusTypeDef test = MAX30102_TestConnection();
 	Scan_I2C_Bus();
-	  // Initiation
-	  max30102_init(&max30102, &MAX30102_I2C);
-	  max30102_reset(&max30102);
-	  max30102_clear_fifo(&max30102);
-	  max30102_set_fifo_config(&max30102, max30102_smp_ave_8, 1, 7);
+//	Sensor_MAX30102_init(800, &max30102, &MAX30102_I2C);
+	Sensor_MAX30102_init(&SmartWatchData_handle.max30102, &MAX30102_I2C);
 
-	  // Sensor settings
-	  max30102_set_led_pulse_width(&max30102, max30102_pw_16_bit);
-	  max30102_set_adc_resolution(&max30102, max30102_adc_2048);
-	  max30102_set_sampling_rate(&max30102, max30102_sr_800);
-	  max30102_set_led_current_1(&max30102, 6.2);
-	  max30102_set_led_current_2(&max30102, 6.2);
-
-	  // Enter SpO2 mode
-	  max30102_set_mode(&max30102, max30102_spo2);
-	  max30102_set_a_full(&max30102, 1);
-
-	  // Initiate 1 temperature measurement
-	  max30102_set_die_temp_en(&max30102, 1);
-	  max30102_set_die_temp_rdy(&max30102, 1);
-
-	  uint8_t en_reg[2] = {0};
-	  max30102_read(&max30102, 0x00, en_reg, 1);
-
-	//Enter measurement mode:
-	// Enter SpO2 mode
-	max30102_set_mode(&max30102, max30102_spo2);
-
-	//Enable the required interrupts:
-	// Enable FIFO_A_FULL interrupt
-	max30102_set_a_full(&max30102, 1);
-	// Enable die temperature measurement
-	max30102_set_die_temp_en(&max30102, 1);
-	// Enable DIE_TEMP_RDY interrupt
-	max30102_set_die_temp_rdy(&max30102, 1);
-	printf("test\r\n");
 #endif
   /* USER CODE END 2 */
 
@@ -382,20 +351,32 @@ int main(void)
 //	    	SmartWatchData_handle.pressure = 100.0f + 10.0f * (i % 5); // 100, 110, 120, 130, 140, repeat
 //	    	HAL_Delay(80);
 //	    }
-		SmartWatchData_handle.pressure += 1;
-		SmartWatchData_handle.heart_rate += 1;
-		SmartWatchData_handle.spo2 += 1;
-		SmartWatchScreen_State = SCREEN_HEART_RATE;
-	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
-	    HAL_Delay(20);
+//		SmartWatchData_handle.pressure += 1;
+//		SmartWatchData_handle.heart_rate += 1;
+//		SmartWatchData_handle.spo2 += 1;
+//		SmartWatchScreen_State = SCREEN_HEART_RATE;
+//	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
+//	    HAL_Delay(20);
 		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
 #ifdef MAX30102_TEST
 	    // If interrupt flag is active
-	    if (max30102_has_interrupt(&max30102))
-	      // Run interrupt handler to read FIFO
-	      max30102_interrupt_handler(&max30102);
+		Sensor_max30102_Update(&SmartWatchData_handle);
+//	    if (max30102_has_interrupt(&SmartWatchData_handle.max30102))
+//	    {
+//		      // Run interrupt handler to read FIFO
+//		      max30102_interrupt_handler(&SmartWatchData_handle.max30102);
+//		      Sensor_MAX30102_compute(&SmartWatchData_handle.max30102);
+//		      uint8_t hr = Sensor_MAX30102_get_hr();
+//		      uint8_t spo2 = Sensor_MAX30102_get_spo2();
+//
+//		      printf("---------------new data---------------\r\n");
+//		      printf("hr : %u r\n",hr);
+//		      printf("spo2 : %u r\n",spo2);
+//
+//	    }
+
 #endif
 
     /* USER CODE END WHILE */
@@ -497,7 +478,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if (GPIO_Pin == MAX30102_INT_Pin)
     {
-    	max30102_on_interrupt(&max30102);
+    	max30102_on_interrupt(&SmartWatchData_handle.max30102);
     }
 }
 /* USER CODE END 4 */

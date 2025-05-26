@@ -1,2 +1,15 @@
-../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:17:6:Sensor_MPU6500_read_data	400	static
-../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:64:6:Sensor_BMP280_init	280	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:27:6:Sensor_SmartWatch_init	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:42:6:Sensor_SmartWatch_update	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:53:6:Sensor_max30102_Update	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:133:6:max30102_plot	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:141:6:Sensor_GNSS_Init	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:165:6:Sensor_GNSS_Update	24	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:205:6:Sensor_MPU6500_read_data	408	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:252:6:Sensor_BMP280_init	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:280:6:Sensor_BMP280_read_data	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:305:6:Sensor_MAX30102_configure_optimal_hr_spo2	24	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:415:13:_calc_acdc_N	72	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:435:16:_detect_MAX30102_hr_N	56	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:480:6:Sensor_MAX30102_init	16	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:494:9:Sensor_MAX30102_get_hr	4	static
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c:499:9:Sensor_MAX30102_get_spo2	4	static

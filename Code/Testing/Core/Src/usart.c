@@ -191,7 +191,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     PB8     ------> UART4_RX
     PB9     ------> UART4_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+    GPIO_InitStruct.Pin = BLE_RX_Pin|BLE_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -367,7 +367,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     PB8     ------> UART4_RX
     PB9     ------> UART4_TX
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOB, BLE_RX_Pin|BLE_TX_Pin);
 
     /* UART4 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmarx);

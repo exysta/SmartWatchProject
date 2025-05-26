@@ -41,6 +41,7 @@ void Display_Init(UI_Screen_State_t screenState)
 	ST7789_Init();
 	previous_screenState = screenState;
 	current_screenState = screenState;
+	HAL_GPIO_WritePin(ST7789_BLK_GPIO_Port, ST7789_BLK_Pin, GPIO_PIN_SET);
 }
 
 //this shit is need to have the output image with the right color

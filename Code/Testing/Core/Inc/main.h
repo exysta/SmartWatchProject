@@ -97,6 +97,10 @@ void Error_Handler(void);
 #define MAX30102_SCL_GPIO_Port GPIOB
 #define MAX30102_SDA_Pin GPIO_PIN_7
 #define MAX30102_SDA_GPIO_Port GPIOB
+#define BLE_RX_Pin GPIO_PIN_8
+#define BLE_RX_GPIO_Port GPIOB
+#define BLE_TX_Pin GPIO_PIN_9
+#define BLE_TX_GPIO_Port GPIOB
 #define LD2_Pin GPIO_PIN_1
 #define LD2_GPIO_Port GPIOE
 

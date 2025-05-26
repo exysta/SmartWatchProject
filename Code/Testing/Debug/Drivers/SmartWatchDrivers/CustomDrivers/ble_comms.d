@@ -37,7 +37,9 @@ Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.o: \
  ../Drivers/SmartWatchDrivers/CustomDrivers/common_defs.h \
  ../Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.h \
  C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h \
- ../Core/Inc/main.h ../Core/Inc/i2c.h
+ ../Core/Inc/main.h ../Core/Inc/i2c.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/bmp280.h \
+ C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.h
 ../Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
@@ -78,3 +80,5 @@ Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.o: \
 C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/GNSS.h:
 ../Core/Inc/main.h:
 ../Core/Inc/i2c.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/bmp280.h:
+C:/Users/exysta/Desktop/work/oulu/Embeded_System_Project/SmartWatchProject/Code/Testing/Drivers/SmartWatchDrivers/StolenDrivers/max30102_for_stm32_hal.h:
