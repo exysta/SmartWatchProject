@@ -36,6 +36,7 @@
 "./Drivers/SmartWatchDrivers/CustomDrivers/display.o"
 "./Drivers/SmartWatchDrivers/CustomDrivers/input.o"
 "./Drivers/SmartWatchDrivers/CustomDrivers/sensors.o"
+"./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/GNSS.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/bmp280.o"
 "./Drivers/SmartWatchDrivers/StolenDrivers/fonts.o"

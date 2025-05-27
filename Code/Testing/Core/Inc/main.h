@@ -75,6 +75,16 @@ void Error_Handler(void);
 #define MAX30102_INT_Pin GPIO_PIN_8
 #define MAX30102_INT_GPIO_Port GPIOE
 #define MAX30102_INT_EXTI_IRQn EXTI9_5_IRQn
+#define BME280_CS_Pin GPIO_PIN_15
+#define BME280_CS_GPIO_Port GPIOE
+#define BME280_SCL_Pin GPIO_PIN_10
+#define BME280_SCL_GPIO_Port GPIOB
+#define BME280_SDA_Pin GPIO_PIN_11
+#define BME280_SDA_GPIO_Port GPIOB
+#define GNSS_RX_Pin GPIO_PIN_12
+#define GNSS_RX_GPIO_Port GPIOB
+#define GNSS_TX_Pin GPIO_PIN_13
+#define GNSS_TX_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
 #define STLINK_RX_Pin GPIO_PIN_8

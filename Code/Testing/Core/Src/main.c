@@ -39,7 +39,7 @@
 #include "display.h"
 #include "max30102_for_stm32_hal.h"
 #include "sensors.h"
-
+#include "uart_comms.h"
 
 /* USER CODE END Includes */
 
@@ -50,8 +50,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
-
 
 /* USER CODE END PD */
 
@@ -92,7 +90,7 @@ static void MPU_Config(void);
 /* USER CODE BEGIN 0 */
 int __io_putchar(int chr)
 {
-	HAL_UART_Transmit(&STLINK_UART, (uint8_t*)&chr, 1, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&STLINK_UART, (uint8_t*) &chr, 1, HAL_MAX_DELAY);
 	return chr;
 }
 /* USER CODE END 0 */
@@ -139,6 +137,29 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+	HAL_StatusTypeDef Scan_I2C_Bus(I2C_HandleTypeDef *hi2c)
+	{
+		HAL_StatusTypeDef status;
+		uint32_t err;
+		for (uint16_t addr = 1; addr < 128; addr++)
+		{
+			status = HAL_I2C_IsDeviceReady(hi2c, addr << 1, 3,
+			500);
+			if (status == HAL_OK)
+			{
+				printf("I2C: device ACK at 0x%02X\r\n", addr);
+			}
+			else
+			{
+				err = HAL_I2C_GetError(hi2c);
+				// err == HAL_I2C_ERROR_NONE usually means NACK
+				printf("I2C: 0x%02X no ACK (err=0x%lX)\r\n", addr, err);
+			}
+			HAL_Delay(5);  // give time for UART to flush
+		}
+		return HAL_OK;
+	}
+
 #ifdef BLE_TEST
 
   configureHM10();
@@ -146,34 +167,18 @@ int main(void)
 #endif
 
 #ifdef BME280
-	uint8_t txData = 0xD0;  // Array with a single element
-	// Command to send
-	uint8_t rxData[1];           // Buffer to store response
+	Scan_I2C_Bus(&BME280_I2C);
 
-	HAL_I2C_Master_Transmit(&BME280_I2C, BME280_ADDR, &txData, 1, 100);
-	HAL_StatusTypeDef status = HAL_I2C_Master_Receive(&BME280_I2C, BME280_ADDR, rxData, 1, 100);
-	printf("Received: 0x%02X \r\n", rxData[0]);  // Print response
-
-
-	bmp280_init_default_params(&bmp280.params);
-	bmp280.addr = BMP280_I2C_ADDRESS_0;
-	bmp280.i2c = &BME280_I2C;
-
-	while (!bmp280_init(&bmp280, &bmp280.params)) {
-		size = sprintf((char *)Data, "BMP280 initialization failed\r\n");
-		HAL_UART_Transmit(&huart3, Data, size, 1000);
-		HAL_Delay(2000);
-	}
-	bool bme280p = bmp280.id == BME280_CHIP_ID;
-	size = sprintf((char *)Data, "BMP280: found %s \r\n", bme280p ? "BME280" : "BMP280");
-	HAL_UART_Transmit(&huart3, Data, size, 1000);
+  Sensor_BMP280_init(&SmartWatchData_handle.bmp280);
 #endif
 
 #ifdef GPS_TEST
-	GNSS_Init(&GNSS_Handle, &GNSS_UART);
-	HAL_Delay(1000);
-	GNSS_LoadConfig(&GNSS_Handle);
-	uint32_t Timer = HAL_GetTick();
+//	GNSS_Init(&GNSS_Handle, &GNSS_UART);
+//	HAL_Delay(1000);
+//	GNSS_LoadConfig(&GNSS_Handle);
+//	uint32_t Timer = HAL_GetTick();
+    Sensor_GNSS_Init(&SmartWatchData_handle,&GNSS_UART);        // init GNSS data handle
+
 #endif
 
 #ifdef MPU6500_TEST
@@ -202,16 +207,15 @@ int main(void)
 
 #endif
 
-
 #ifdef MAX30102_TEST
 	// 7-bit I2C address of the MAX30102 is 0x57, shift left for HAL (8-bit format)
-	#define MAX30102_ADDR   (0x57 << 1)
+#define MAX30102_ADDR   (0x57 << 1)
 
 	// MAX30102 register addresses
-	#define MAX30102_PART_ID_REG   0xFF
+#define MAX30102_PART_ID_REG   0xFF
 
 	// timeout for HAL transactions (ms)
-	#define MAX30102_I2C_TIMEOUT   100
+#define MAX30102_I2C_TIMEOUT   100
 
 	/**
 	 * @brief  Simple connection test for MAX30102
@@ -220,55 +224,32 @@ int main(void)
 	 */
 	HAL_StatusTypeDef MAX30102_TestConnection(void)
 	{
-	    uint8_t part_id = 0;
-	    HAL_StatusTypeDef status;
+		uint8_t part_id = 0;
+		HAL_StatusTypeDef status;
 
-	    // Read PART_ID register
-	    status = HAL_I2C_Mem_Read(&MAX30102_I2C,
-	                              MAX30102_ADDR,
-	                              MAX30102_PART_ID_REG,
-	                              I2C_MEMADD_SIZE_8BIT,
-	                              &part_id,
-	                              1,
-	                              MAX30102_I2C_TIMEOUT);
+		// Read PART_ID register
+		status = HAL_I2C_Mem_Read(&MAX30102_I2C,
+		MAX30102_ADDR,
+		MAX30102_PART_ID_REG,
+		I2C_MEMADD_SIZE_8BIT, &part_id, 1,
+		MAX30102_I2C_TIMEOUT);
 
-	    if (status != HAL_OK) {
-	        // I2C error (NACK, bus fault, etc.)
-	        return status;
-	    }
+		if (status != HAL_OK)
+		{
+			// I2C error (NACK, bus fault, etc.)
+			return status;
+		}
 
-	    if (part_id != 0x15) {
-	        // Unexpected ID
-	        return HAL_ERROR;
-	    }
+		if (part_id != 0x15)
+		{
+			// Unexpected ID
+			return HAL_ERROR;
+		}
 
-	    // All good!
-	    return HAL_OK;
+		// All good!
+		return HAL_OK;
 	}
-	HAL_StatusTypeDef Scan_I2C_Bus(void)
-	{
-	    HAL_StatusTypeDef status;
-	    uint32_t err;
-	    for (uint16_t addr = 1; addr < 128; addr++)
-	    {
-	        status = HAL_I2C_IsDeviceReady(&MAX30102_I2C,
-	                                       addr << 1,
-	                                       3,
-	                                       MAX30102_I2C_TIMEOUT);
-	        if (status == HAL_OK)
-	        {
-	            printf("I2C: device ACK at 0x%02X\r\n", addr);
-	        }
-	        else
-	        {
-	            err = HAL_I2C_GetError(&MAX30102_I2C);
-	            // err == HAL_I2C_ERROR_NONE usually means NACK
-	            //printf("I2C: 0x%02X no ACK (err=0x%lX)\r\n", addr, err);
-	        }
-	        HAL_Delay(5);  // give time for UART to flush
-	    }
-	    return HAL_OK;
-	}
+
 //	HAL_StatusTypeDef test = MAX30102_TestConnection();
 	Scan_I2C_Bus();
 //	Sensor_MAX30102_init(800, &max30102, &MAX30102_I2C);
@@ -283,50 +264,47 @@ int main(void)
 	{
 #ifdef BME280
 
-		HAL_Delay(100);
+		Sensor_BMP280_read_data(&SmartWatchData_handle);
 
-		while (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity)) {
-			printf("Temperature/pressure reading failed\r\n");
-			HAL_Delay(2000);
-		}
 
-		printf("Pressure: %.2f Pa, Temperature: %.2f C \r\n", pressure, temperature);
+		printf("Pressure: %.2f Pa, Temperature: %.2f C,  Humidity: %.2f \r\n", SmartWatchData_handle.pressure, SmartWatchData_handle.temperature,SmartWatchData_handle.humidity);
 
-		if (bme280p) {
-			printf(", Humidity: %.2f\r\n", humidity);
-		} else {
-			printf("\r\n");
-		}
 
-		HAL_Delay(2000);
+		HAL_Delay(500);
 #endif
 
-
 #ifdef GPS_TEST
-		if ((HAL_GetTick() - Timer) > 1000) {
-			GNSS_GetUniqID(&GNSS_Handle);
-			GNSS_ParseBuffer(&GNSS_Handle);
-			HAL_Delay(250);
-			GNSS_GetPVTData(&GNSS_Handle);
-			GNSS_ParseBuffer(&GNSS_Handle);
-			HAL_Delay(250);
-			GNSS_SetMode(&GNSS_Handle,Automotiv);
-			HAL_Delay(250);
-			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
-			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
-			printf("Status of fix: %d \r\n", GNSS_Handle.fixType);
-			printf("Latitude: %f \r\n", GNSS_Handle.fLat);
-			printf("Longitude: %f \r\n",(float) GNSS_Handle.lon / 10000000.0);
-			printf("Height above ellipsoid: %d \r\n", GNSS_Handle.height);
-			printf("Height above mean sea level: %d \r\n", GNSS_Handle.hMSL);
-			printf("Ground Speed (2-D): %d \r\n", GNSS_Handle.gSpeed);
-			printf("Unique ID: %04X %04X %04X %04X %04X \n\r",
-					GNSS_Handle.uniqueID[0], GNSS_Handle.uniqueID[1],
-					GNSS_Handle.uniqueID[2], GNSS_Handle.uniqueID[3],
-					GNSS_Handle.uniqueID[4], GNSS_Handle.uniqueID[5]);
-			printf("--------------------------------------\r\n" );
-			Timer = HAL_GetTick();
-		}
+//		if ((HAL_GetTick() - Timer) > 1000)
+//		{
+//			GNSS_GetUniqID(&GNSS_Handle);
+//			GNSS_ParseBuffer(&GNSS_Handle);
+//			HAL_Delay(250);
+//			GNSS_GetPVTData(&GNSS_Handle);
+//			GNSS_ParseBuffer(&GNSS_Handle);
+//			HAL_Delay(250);
+//			GNSS_SetMode(&GNSS_Handle,Wirst);
+//			HAL_Delay(250);
+//			printf("Day: %d-%d-%d \r\n", GNSS_Handle.day, GNSS_Handle.month,GNSS_Handle.year);
+//			printf("Time: %d:%d:%d \r\n", GNSS_Handle.hour, GNSS_Handle.min,GNSS_Handle.sec);
+//			printf("Status of fix: %d \r\n", GNSS_Handle.fixType);
+//			printf("Latitude: %f \r\n", GNSS_Handle.fLat);
+//			printf("Longitude: %f \r\n",(float) GNSS_Handle.lon / 10000000.0);
+//			printf("Height above ellipsoid: %d \r\n", GNSS_Handle.height);
+//			printf("Height above mean sea level: %d \r\n", GNSS_Handle.hMSL);
+//			printf("Ground Speed (2-D): %d \r\n", GNSS_Handle.gSpeed);
+//			printf("Unique ID: %04X %04X %04X %04X %04X \n\r",
+//					GNSS_Handle.uniqueID[0], GNSS_Handle.uniqueID[1],
+//					GNSS_Handle.uniqueID[2], GNSS_Handle.uniqueID[3],
+//					GNSS_Handle.uniqueID[4], GNSS_Handle.uniqueID[5]);
+//			printf("--------------------------------------\r\n" );
+//			Timer = HAL_GetTick();
+//		}
+		Sensor_GNSS_Update(&SmartWatchData_handle);
+
+		Sensor_SmartWatch_log(&SmartWatchData_handle);
+		//			Timer = HAL_GetTick();
+
+		HAL_Delay(1000);
 #endif
 #ifdef BLE_TEST
         if (messageReady) {
@@ -336,12 +314,11 @@ int main(void)
         }
 #endif
 
-
-
 #ifdef MPU6500_TEST
-	    read_mpu_data_example();
-	    printf("===================================\r\n");
-		HAL_Delay(1000);
+        Sensor_MPU6500_read_data(&SmartWatchData_handle);
+        printf("===================================\r\n");
+
+		HAL_Delay(500);
 
 #endif
 
@@ -361,7 +338,7 @@ int main(void)
 #endif
 
 #ifdef MAX30102_TEST
-	    // If interrupt flag is active
+		// If interrupt flag is active
 		Sensor_max30102_Update(&SmartWatchData_handle);
 //	    if (max30102_has_interrupt(&SmartWatchData_handle.max30102))
 //	    {
@@ -449,37 +426,38 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 // This callback is called when idle line is detected or buffer is full
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
-    if (huart->Instance == UART4)
-    {
-        // Copy the data from DMA buffer to message buffer
-        memcpy(messageBuffer, rxBuffer, Size);
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+	if (huart->Instance == UART4)
+	{
+		// Copy the data from DMA buffer to message buffer
+		memcpy(messageBuffer, rxBuffer, Size);
 
-        // Null-terminate the string
-        messageBuffer[Size] = '\0';
+		// Null-terminate the string
+		messageBuffer[Size] = '\0';
 
-        // Set flag for main loop
-        messageReady = 1;
+		// Set flag for main loop
+		messageReady = 1;
 
-        HAL_UART_AbortReceive(huart);  // Stop DMA
-        memset(rxBuffer, 0, sizeof(rxBuffer));  // Reset buffer
+		HAL_UART_AbortReceive(huart);  // Stop DMA
+		memset(rxBuffer, 0, sizeof(rxBuffer));  // Reset buffer
 
-        // Restart DMA reception
-        HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
-        __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
-    }
+		// Restart DMA reception
+		HAL_UARTEx_ReceiveToIdle_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
+		__HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin == InputButton_Pin)
-    {
+	if (GPIO_Pin == InputButton_Pin)
+	{
 
-    }
-    else if (GPIO_Pin == MAX30102_INT_Pin)
-    {
-    	max30102_on_interrupt(&SmartWatchData_handle.max30102);
-    }
+	}
+	else if (GPIO_Pin == MAX30102_INT_Pin)
+	{
+		max30102_on_interrupt(&SmartWatchData_handle.max30102);
+	}
 }
 /* USER CODE END 4 */
 

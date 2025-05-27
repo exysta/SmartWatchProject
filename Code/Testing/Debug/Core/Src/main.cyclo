@@ -1,8 +1,7 @@
-../Core/Src/main.c:93:5:__io_putchar	1
-../Core/Src/main.c:104:5:main	1
-../Core/Src/main.c:248:20:Scan_I2C_Bus	3
-../Core/Src/main.c:393:6:SystemClock_Config	4
-../Core/Src/main.c:452:6:HAL_UARTEx_RxEventCallback	18
-../Core/Src/main.c:473:6:HAL_GPIO_EXTI_Callback	3
-../Core/Src/main.c:488:6:MPU_Config	1
-../Core/Src/main.c:519:6:Error_Handler	1
+../Core/Src/main.c:91:5:__io_putchar	1
+../Core/Src/main.c:102:5:main	1
+../Core/Src/main.c:370:6:SystemClock_Config	4
+../Core/Src/main.c:429:6:HAL_UARTEx_RxEventCallback	18
+../Core/Src/main.c:451:6:HAL_GPIO_EXTI_Callback	3
+../Core/Src/main.c:466:6:MPU_Config	1
+../Core/Src/main.c:497:6:Error_Handler	1

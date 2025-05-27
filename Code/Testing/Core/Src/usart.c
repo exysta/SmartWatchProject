@@ -265,7 +265,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     PB12     ------> UART5_RX
     PB13     ------> UART5_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
+    GPIO_InitStruct.Pin = GNSS_RX_Pin|GNSS_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -281,7 +281,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_uart5_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_uart5_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_uart5_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_uart5_rx.Init.Mode = DMA_NORMAL;
+    hdma_uart5_rx.Init.Mode = DMA_CIRCULAR;
     hdma_uart5_rx.Init.Priority = DMA_PRIORITY_LOW;
     hdma_uart5_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_uart5_rx) != HAL_OK)
@@ -391,7 +391,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     PB12     ------> UART5_RX
     PB13     ------> UART5_TX
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
+    HAL_GPIO_DeInit(GPIOB, GNSS_RX_Pin|GNSS_TX_Pin);
 
     /* UART5 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmarx);

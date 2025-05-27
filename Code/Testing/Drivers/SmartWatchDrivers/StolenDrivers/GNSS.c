@@ -90,7 +90,7 @@ void GNSS_ParseBuffer(GNSS_StateHandle *GNSS) {
 void GNSS_GetUniqID(GNSS_StateHandle *GNSS) {
 	HAL_UART_Transmit_DMA(GNSS->huart, getDeviceID,
 			sizeof(getDeviceID) / sizeof(uint8_t));
-	HAL_UART_Receive_IT(GNSS->huart, GNSS_Handle.uartWorkingBuffer, 17);
+	HAL_UART_Receive_IT(GNSS->huart, GNSS->uartWorkingBuffer, 17);
 }
 
 /*!
@@ -100,7 +100,7 @@ void GNSS_GetUniqID(GNSS_StateHandle *GNSS) {
 void GNSS_GetNavigatorData(GNSS_StateHandle *GNSS) {
 	HAL_UART_Transmit_DMA(GNSS->huart, getNavigatorData,
 			sizeof(getNavigatorData) / sizeof(uint8_t));
-	HAL_UART_Receive_IT(GNSS->huart, GNSS_Handle.uartWorkingBuffer, 28);
+	HAL_UART_Receive_IT(GNSS->huart, GNSS->uartWorkingBuffer, 28);
 }
 
 /*!
@@ -110,7 +110,7 @@ void GNSS_GetNavigatorData(GNSS_StateHandle *GNSS) {
 void GNSS_GetPOSLLHData(GNSS_StateHandle *GNSS) {
 	HAL_UART_Transmit_DMA(GNSS->huart, getPOSLLHData,
 			sizeof(getPOSLLHData) / sizeof(uint8_t));
-	HAL_UART_Receive_IT(GNSS->huart, GNSS_Handle.uartWorkingBuffer, 36);
+	HAL_UART_Receive_IT(GNSS->huart, GNSS->uartWorkingBuffer, 36);
 }
 
 /*!
@@ -120,7 +120,7 @@ void GNSS_GetPOSLLHData(GNSS_StateHandle *GNSS) {
 void GNSS_GetPVTData(GNSS_StateHandle *GNSS) {
 	HAL_UART_Transmit_DMA(GNSS->huart, getPVTData,
 			sizeof(getPVTData) / sizeof(uint8_t));
-	HAL_UART_Receive_IT(GNSS->huart, GNSS_Handle.uartWorkingBuffer, 100);
+	HAL_UART_Receive_IT(GNSS->huart, GNSS->uartWorkingBuffer, 100);
 }
 
 /*!
@@ -130,7 +130,7 @@ void GNSS_GetPVTData(GNSS_StateHandle *GNSS) {
  */
 void GNSS_ParseUniqID(GNSS_StateHandle *GNSS) {
 	for (int var = 0; var < 5; ++var) {
-		GNSS->uniqueID[var] = GNSS_Handle.uartWorkingBuffer[10 + var];
+		GNSS->uniqueID[var] = GNSS->uartWorkingBuffer[10 + var];
 	}
 }
 
@@ -167,59 +167,59 @@ void GNSS_SetMode(GNSS_StateHandle *GNSS, short gnssMode) {
  * @param GNSS Pointer to main GNSS structure.
  */
 void GNSS_ParsePVTData(GNSS_StateHandle *GNSS) {
-	uShort.bytes[0] = GNSS_Handle.uartWorkingBuffer[10];
-	GNSS->yearBytes[0]=GNSS_Handle.uartWorkingBuffer[10];
-	uShort.bytes[1] = GNSS_Handle.uartWorkingBuffer[11];
-	GNSS->yearBytes[1]=GNSS_Handle.uartWorkingBuffer[11];
+	uShort.bytes[0] = GNSS->uartWorkingBuffer[10];
+	GNSS->yearBytes[0]=GNSS->uartWorkingBuffer[10];
+	uShort.bytes[1] = GNSS->uartWorkingBuffer[11];
+	GNSS->yearBytes[1]=GNSS->uartWorkingBuffer[11];
 	GNSS->year = uShort.uShort;
-	GNSS->month = GNSS_Handle.uartWorkingBuffer[12];
-	GNSS->day = GNSS_Handle.uartWorkingBuffer[13];
-	GNSS->hour = GNSS_Handle.uartWorkingBuffer[14];
-	GNSS->min = GNSS_Handle.uartWorkingBuffer[15];
-	GNSS->sec = GNSS_Handle.uartWorkingBuffer[16];
-	GNSS->fixType = GNSS_Handle.uartWorkingBuffer[26];
+	GNSS->month = GNSS->uartWorkingBuffer[12];
+	GNSS->day = GNSS->uartWorkingBuffer[13];
+	GNSS->hour = GNSS->uartWorkingBuffer[14];
+	GNSS->min = GNSS->uartWorkingBuffer[15];
+	GNSS->sec = GNSS->uartWorkingBuffer[16];
+	GNSS->fixType = GNSS->uartWorkingBuffer[26];
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 30];
-		GNSS->lonBytes[var]= GNSS_Handle.uartWorkingBuffer[var + 30];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 30];
+		GNSS->lonBytes[var]= GNSS->uartWorkingBuffer[var + 30];
 	}
 	GNSS->lon = iLong.iLong;
 	GNSS->fLon=(float)iLong.iLong/10000000.0;
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 34];
-		GNSS->latBytes[var]=GNSS_Handle.uartWorkingBuffer[var + 34];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 34];
+		GNSS->latBytes[var]=GNSS->uartWorkingBuffer[var + 34];
 	}
 	GNSS->lat = iLong.iLong;
 	GNSS->fLat=(float)iLong.iLong/10000000.0;
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 38];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 38];
 	}
 	GNSS->height = iLong.iLong;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 42];
-		GNSS->hMSLBytes[var] = GNSS_Handle.uartWorkingBuffer[var + 42];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 42];
+		GNSS->hMSLBytes[var] = GNSS->uartWorkingBuffer[var + 42];
 	}
 	GNSS->hMSL = iLong.iLong;
 
 	for (int var = 0; var < 4; ++var) {
-		uLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 46];
+		uLong.bytes[var] = GNSS->uartWorkingBuffer[var + 46];
 	}
 	GNSS->hAcc = uLong.uLong;
 
 	for (int var = 0; var < 4; ++var) {
-		uLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 50];
+		uLong.bytes[var] = GNSS->uartWorkingBuffer[var + 50];
 	}
 	GNSS->vAcc = uLong.uLong;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 66];
-		GNSS->gSpeedBytes[var] = GNSS_Handle.uartWorkingBuffer[var + 66];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 66];
+		GNSS->gSpeedBytes[var] = GNSS->uartWorkingBuffer[var + 66];
 	}
 	GNSS->gSpeed = iLong.iLong;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 70];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 70];
 	}
 	GNSS->headMot = iLong.iLong * 1e-5; // todo I'm not sure this good options.
 }
@@ -230,14 +230,14 @@ void GNSS_ParsePVTData(GNSS_StateHandle *GNSS) {
  * @param GNSS Pointer to main GNSS structure.
  */
 void GNSS_ParseNavigatorData(GNSS_StateHandle *GNSS) {
-	uShort.bytes[0] = GNSS_Handle.uartWorkingBuffer[18];
-	uShort.bytes[1] = GNSS_Handle.uartWorkingBuffer[19];
+	uShort.bytes[0] = GNSS->uartWorkingBuffer[18];
+	uShort.bytes[1] = GNSS->uartWorkingBuffer[19];
 	GNSS->year = uShort.uShort;
-	GNSS->month = GNSS_Handle.uartWorkingBuffer[20];
-	GNSS->day = GNSS_Handle.uartWorkingBuffer[21];
-	GNSS->hour = GNSS_Handle.uartWorkingBuffer[22];
-	GNSS->min = GNSS_Handle.uartWorkingBuffer[23];
-	GNSS->sec = GNSS_Handle.uartWorkingBuffer[24];
+	GNSS->month = GNSS->uartWorkingBuffer[20];
+	GNSS->day = GNSS->uartWorkingBuffer[21];
+	GNSS->hour = GNSS->uartWorkingBuffer[22];
+	GNSS->min = GNSS->uartWorkingBuffer[23];
+	GNSS->sec = GNSS->uartWorkingBuffer[24];
 }
 
 /*!
@@ -247,34 +247,34 @@ void GNSS_ParseNavigatorData(GNSS_StateHandle *GNSS) {
  */
 void GNSS_ParsePOSLLHData(GNSS_StateHandle *GNSS) {
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 10];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 10];
 	}
 	GNSS->lon = iLong.iLong;
 	GNSS->fLon=(float)iLong.iLong/10000000.0;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 14];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 14];
 	}
 	GNSS->lat = iLong.iLong;
 	GNSS->fLat=(float)iLong.iLong/10000000.0;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 18];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 18];
 	}
 	GNSS->height = iLong.iLong;
 
 	for (int var = 0; var < 4; ++var) {
-		iLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 22];
+		iLong.bytes[var] = GNSS->uartWorkingBuffer[var + 22];
 	}
 	GNSS->hMSL = iLong.iLong;
 
 	for (int var = 0; var < 4; ++var) {
-		uLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 26];
+		uLong.bytes[var] = GNSS->uartWorkingBuffer[var + 26];
 	}
 	GNSS->hAcc = uLong.uLong;
 
 	for (int var = 0; var < 4; ++var) {
-		uLong.bytes[var] = GNSS_Handle.uartWorkingBuffer[var + 30];
+		uLong.bytes[var] = GNSS->uartWorkingBuffer[var + 30];
 	}
 	GNSS->vAcc = uLong.uLong;
 }

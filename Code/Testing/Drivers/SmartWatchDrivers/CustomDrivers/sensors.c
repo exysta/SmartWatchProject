@@ -142,7 +142,6 @@ void Sensor_GNSS_Init(SmartWatchData_t *sw, UART_HandleTypeDef *huart)
 {
     // 1) initialize the GNSS handle inside sw
     GNSS_Init(&sw->gps_data, huart);
-    HAL_Delay(200);
 
     // 2) load your base configuration (turns off NMEA, enables UBX + Galileo)
     GNSS_LoadConfig(&sw->gps_data);
@@ -229,19 +228,19 @@ void Sensor_MPU6500_read_data(SmartWatchData_t *SmartWatchData_handle)
 			SmartWatchData_handle->gyro_dps[i][2] = gyro_dps[i][2];
 		}
 		//DEBUG
-//		printf("Read %u samples successfully.\r\n", samples_read);
-//		for (i = 0; i < samples_read; i++)
-//		{
-//			printf("Sample %d:\r\n", i);
-//			printf("  Accel Raw:  X=%d, Y=%d, Z=%d\r\n", accel_raw[i][0],
-//					accel_raw[i][1], accel_raw[i][2]);
-//			printf("  Accel (g):  X=%.3f, Y=%.3f, Z=%.3f\r\n", accel_g[i][0],
-//					accel_g[i][1], accel_g[i][2]);
-//			printf("  Gyro Raw:   X=%d, Y=%d, Z=%d\r\n", gyro_raw[i][0],
-//					gyro_raw[i][1], gyro_raw[i][2]);
-//			printf("  Gyro (dps): X=%.2f, Y=%.2f, Z=%.2f\r\n", gyro_dps[i][0],
-//					gyro_dps[i][1], gyro_dps[i][2]);
-//		}
+		printf("Read %u samples successfully.\r\n", samples_read);
+		for (i = 0; i < samples_read; i++)
+		{
+			printf("Sample %d:\r\n", i);
+			printf("  Accel Raw:  X=%d, Y=%d, Z=%d\r\n", accel_raw[i][0],
+					accel_raw[i][1], accel_raw[i][2]);
+			printf("  Accel (g):  X=%.3f, Y=%.3f, Z=%.3f\r\n", accel_g[i][0],
+					accel_g[i][1], accel_g[i][2]);
+			printf("  Gyro Raw:   X=%d, Y=%d, Z=%d\r\n", gyro_raw[i][0],
+					gyro_raw[i][1], gyro_raw[i][2]);
+			printf("  Gyro (dps): X=%.2f, Y=%.2f, Z=%.2f\r\n", gyro_dps[i][0],
+					gyro_dps[i][1], gyro_dps[i][2]);
+		}
 	}
 	else
 	{

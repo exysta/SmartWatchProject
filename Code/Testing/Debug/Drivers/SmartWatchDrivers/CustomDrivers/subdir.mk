@@ -9,21 +9,24 @@ C_SRCS += \
 ../Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.c \
 ../Drivers/SmartWatchDrivers/CustomDrivers/display.c \
 ../Drivers/SmartWatchDrivers/CustomDrivers/input.c \
-../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c 
+../Drivers/SmartWatchDrivers/CustomDrivers/sensors.c \
+../Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.c 
 
 OBJS += \
 ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.o \
 ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.o \
 ./Drivers/SmartWatchDrivers/CustomDrivers/display.o \
 ./Drivers/SmartWatchDrivers/CustomDrivers/input.o \
-./Drivers/SmartWatchDrivers/CustomDrivers/sensors.o 
+./Drivers/SmartWatchDrivers/CustomDrivers/sensors.o \
+./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.o 
 
 C_DEPS += \
 ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.d \
 ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.d \
 ./Drivers/SmartWatchDrivers/CustomDrivers/display.d \
 ./Drivers/SmartWatchDrivers/CustomDrivers/input.d \
-./Drivers/SmartWatchDrivers/CustomDrivers/sensors.d 
+./Drivers/SmartWatchDrivers/CustomDrivers/sensors.d \
+./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -33,7 +36,7 @@ Drivers/SmartWatchDrivers/CustomDrivers/%.o Drivers/SmartWatchDrivers/CustomDriv
 clean: clean-Drivers-2f-SmartWatchDrivers-2f-CustomDrivers
 
 clean-Drivers-2f-SmartWatchDrivers-2f-CustomDrivers:
-	-$(RM) ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.d ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.o ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.su ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.d ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.o ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.su ./Drivers/SmartWatchDrivers/CustomDrivers/display.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/display.d ./Drivers/SmartWatchDrivers/CustomDrivers/display.o ./Drivers/SmartWatchDrivers/CustomDrivers/display.su ./Drivers/SmartWatchDrivers/CustomDrivers/input.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/input.d ./Drivers/SmartWatchDrivers/CustomDrivers/input.o ./Drivers/SmartWatchDrivers/CustomDrivers/input.su ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.d ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.o ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.su
+	-$(RM) ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.d ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.o ./Drivers/SmartWatchDrivers/CustomDrivers/MPU6500_driver.su ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.d ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.o ./Drivers/SmartWatchDrivers/CustomDrivers/ble_comms.su ./Drivers/SmartWatchDrivers/CustomDrivers/display.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/display.d ./Drivers/SmartWatchDrivers/CustomDrivers/display.o ./Drivers/SmartWatchDrivers/CustomDrivers/display.su ./Drivers/SmartWatchDrivers/CustomDrivers/input.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/input.d ./Drivers/SmartWatchDrivers/CustomDrivers/input.o ./Drivers/SmartWatchDrivers/CustomDrivers/input.su ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.d ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.o ./Drivers/SmartWatchDrivers/CustomDrivers/sensors.su ./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.cyclo ./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.d ./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.o ./Drivers/SmartWatchDrivers/CustomDrivers/uart_comms.su
 
 .PHONY: clean-Drivers-2f-SmartWatchDrivers-2f-CustomDrivers
 

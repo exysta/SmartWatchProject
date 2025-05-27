@@ -20,9 +20,9 @@
 //#define BLE_TEST
 //#define SCREEN_TEST
 //#define BME280
-//#define GPS_TEST
+#define GPS_TEST
 //#define MPU6500_TEST
-#define MAX30102_TEST
+//#define MAX30102_TEST
 
 #define STLINK_UART huart3
 
@@ -32,7 +32,7 @@
 #define MPU6500_I2C hi2c4
 #define MAX30102_I2C hi2c1
 
-#define BME280_ADDR 0x76
+#define BME280_ADDR (0x76 << 1)
 #define RX_BUFFER_SIZE 256
 
 #define MPU6500_I2C_ADDR_SHIFTED            (0x68 << 1)  // Shifted left for HAL compatibility
