@@ -70,6 +70,10 @@ void Error_Handler(void);
 #define PH1_MCU_GPIO_Port GPIOH
 #define MPU6500_AD0_Pin GPIO_PIN_3
 #define MPU6500_AD0_GPIO_Port GPIOA
+#define ST7789_SCK_Pin GPIO_PIN_5
+#define ST7789_SCK_GPIO_Port GPIOA
+#define ST7789_MOSI_Pin GPIO_PIN_7
+#define ST7789_MOSI_GPIO_Port GPIOA
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
 #define MAX30102_INT_Pin GPIO_PIN_8

@@ -49,7 +49,7 @@ uint8_t Sensor_MAX30102_get_hr(void);    // beats per minute
 uint8_t Sensor_MAX30102_get_spo2(void);  // percent (0–100)
 
 
-static uint8_t _detect_MAX30102_hr_N(const uint32_t *ir_buf, int num_samples_to_process);
-static void _calc_acdc_N(const uint32_t *buf, int num_samples_to_process, float *ac, float *dc);
+uint8_t _detect_MAX30102_hr_N(const uint32_t *ir_buf, int num_samples_to_process);
+void _calc_acdc_N(const uint32_t *buf, int num_samples_to_process, float *ac, float *dc);
 
 #endif /* SMARTWATCHDRIVERS_CUSTOMDRIVERS_SENSORS_H_ */

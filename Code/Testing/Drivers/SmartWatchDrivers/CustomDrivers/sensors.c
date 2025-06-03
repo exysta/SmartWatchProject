@@ -8,11 +8,12 @@
 #include "bmp280.h"
 
 #include "sensors.h"
+#include "ble_comms.h"
+
 #include "common_defs.h"
 #include <stdio.h>
 
 SmartWatchData_t SmartWatchData_handle;
-
 
 // internal storage
 static float MAX30102_fs;         // sampling rate in Hz
@@ -22,29 +23,30 @@ static uint8_t last_MAX30102_spo2;
 // Application-level buffers for the full analysis window
 static uint32_t app_ir_analysis_buffer[MAX30102_WINDOW_SIZE];
 static uint32_t app_red_analysis_buffer[MAX30102_WINDOW_SIZE];
-static int app_buffer_fill_count = 0;    // Current number of samples in our app_buffers
+static int app_buffer_fill_count = 0; // Current number of samples in our app_buffers
 
 void Sensor_SmartWatch_init(SmartWatchData_t *SmartWatchData)
 {
-    // 1) Zero entire struct to ensure all numeric fields are 0 / pointers NULL
-    memset(SmartWatchData, 0, sizeof(*SmartWatchData));
+	// 1) Zero entire struct to ensure all numeric fields are 0 / pointers NULL
+	memset(SmartWatchData, 0, sizeof(*SmartWatchData));
 
-    // 2) Explicitly set “valid” flags to false (0)
-    SmartWatchData->bmp_data_valid = 0;
-    SmartWatchData->mpu_data_valid = 0;
+	// 2) Explicitly set “valid” flags to false (0)
+	SmartWatchData->bmp_data_valid = 0;
+	SmartWatchData->mpu_data_valid = 0;
 
-    // 3) Call sensor-specific init routines,
-    Sensor_BMP280_init(&SmartWatchData->bmp280);                   // initialize BMP280 driver
-    Sensor_GNSS_Init(SmartWatchData,&GNSS_UART);        // init GNSS data handle
+	// 3) Call sensor-specific init routines,
+	startUartReception(&BLE_UART);
+	Sensor_BMP280_init(&SmartWatchData->bmp280);     // initialize BMP280 driver
+	Sensor_GNSS_Init(SmartWatchData, &GNSS_UART);       // init GNSS data handle
 	Sensor_MAX30102_init(&SmartWatchData->max30102, &MAX30102_I2C); //800f is default sampling rate for config
 }
 
 void Sensor_SmartWatch_update(SmartWatchData_t *SmartWatchData)
 {
-  	Sensor_BMP280_read_data(SmartWatchData);
-  	Sensor_GNSS_Update(SmartWatchData);
-    Sensor_MPU6500_read_data(SmartWatchData);
-    Sensor_max30102_Update(SmartWatchData);
+	Sensor_BMP280_read_data(SmartWatchData);
+	Sensor_GNSS_Update(SmartWatchData);
+	//Sensor_MPU6500_read_data(SmartWatchData);
+	Sensor_max30102_Update(SmartWatchData);
 }
 
 //------------------------------------------------------------------------------
@@ -52,8 +54,8 @@ void Sensor_SmartWatch_update(SmartWatchData_t *SmartWatchData)
 //------------------------------------------------------------------------------
 void Sensor_max30102_Update(SmartWatchData_t *sw)
 {
-    if (max30102_has_interrupt(&sw->max30102))
-    {
+	if (max30102_has_interrupt(&sw->max30102))
+	{
         max30102_interrupt_handler(&sw->max30102); // This populates sw->max30102._ir_samples etc.
 
 //        for (int i = 0; i < MAX30102_SAMPLES_PER_INTERRUPT; ++i)
@@ -127,35 +129,37 @@ void Sensor_max30102_Update(SmartWatchData_t *sw)
 ////             }
 //
 //        }
-    }
+	}
+    max30102_read_fifo(&sw->max30102);
+
 }
 
-void max30102_plot(uint32_t ir_sample, uint32_t red_sample){
-	 printf("ir : %d, red : %d \r\n",ir_sample,red_sample);
+void max30102_plot(uint32_t ir_sample, uint32_t red_sample)
+{
+//	printf("ir : %lu, red : %lu \r\n", ir_sample, red_sample);
 }
-
 
 //------------------------------------------------------------------------------
 // Call this once at startup to wire up the GNSS inside your SmartWatchData
 //------------------------------------------------------------------------------
 void Sensor_GNSS_Init(SmartWatchData_t *sw, UART_HandleTypeDef *huart)
 {
-    // 1) initialize the GNSS handle inside sw
-    GNSS_Init(&sw->gps_data, huart);
+	// 1) initialize the GNSS handle inside sw
+	GNSS_Init(&sw->gps_data, huart);
 
-    // 2) load your base configuration (turns off NMEA, enables UBX + Galileo)
-    GNSS_LoadConfig(&sw->gps_data);
-    HAL_Delay(200);
+	// 2) load your base configuration (turns off NMEA, enables UBX + Galileo)
+	GNSS_LoadConfig(&sw->gps_data);
+	HAL_Delay(200);
 
-    // 3) apply the “stationary” dynamic model for best static accuracy
-    GNSS_SetMode(&sw->gps_data, Stationary);
-    HAL_Delay(100);
+	// 3) apply the “stationary” dynamic model for best static accuracy
+	GNSS_SetMode(&sw->gps_data, Stationary);
+	HAL_Delay(100);
 
-    // 4) seed your 1 Hz timer
-    sw->GNSS_Timer = HAL_GetTick();
+	// 4) seed your 1 Hz timer
+	sw->GNSS_Timer = HAL_GetTick();
 
-    // mark invalid until we get a fix
-    sw->gps_data.fixType = 0;
+	// mark invalid until we get a fix
+	sw->gps_data.fixType = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -163,42 +167,48 @@ void Sensor_GNSS_Init(SmartWatchData_t *sw, UART_HandleTypeDef *huart)
 //------------------------------------------------------------------------------
 void Sensor_GNSS_Update(SmartWatchData_t *sw)
 {
-    uint32_t now = HAL_GetTick();
+	uint32_t now = HAL_GetTick();
 
-    switch (sw->gnss_state) {
-        case 0: // time to send a request at ~1 Hz?
-            if (now >= sw->gnss_nextRequestTick) {
-                GNSS_GetPVTData(&sw->gps_data);
-                sw->gnss_state             = 1;
-                sw->gnss_nextRequestTick   = now + 100;   // parse in 100 ms
-            }
-            break;
+	switch (sw->gnss_state)
+	{
+	case 0: // time to send a request at ~1 Hz?
+		if (now >= sw->gnss_nextRequestTick)
+		{
+			GNSS_GetPVTData(&sw->gps_data);
+			sw->gnss_state = 1;
+			sw->gnss_nextRequestTick = now + 100;   // parse in 100 ms
+		}
+		break;
 
-        case 1: // time to parse reply?
-            if (now >= sw->gnss_nextRequestTick) {
-                GNSS_ParseBuffer(&sw->gps_data);
+	case 1: // time to parse reply?
+		if (now >= sw->gnss_nextRequestTick)
+		{
+			GNSS_ParseBuffer(&sw->gps_data);
 
-                if (sw->gps_data.fixType >= 3) {
-                    sw->latitude      = sw->gps_data.fLat;
-                    sw->longitude     = sw->gps_data.fLon;
-                    sw->altitude      = sw->gps_data.hMSL / 1000.0f;
-                    sw->year          = sw->gps_data.year;
-                    sw->month         = sw->gps_data.month;
-                    sw->day           = sw->gps_data.day;
-                    sw->hour          = sw->gps_data.hour;
-                    sw->minute        = sw->gps_data.min;
-                    sw->second        = sw->gps_data.sec;
-                    sw->gps_fix_valid = 1;
-                } else {
-                    sw->gps_fix_valid = 0;
-                }
+			if (sw->gps_data.fixType >= 3)
+			{
+				sw->latitude = sw->gps_data.fLat;
+				sw->longitude = sw->gps_data.fLon;
+				sw->altitude = sw->gps_data.hMSL / 1000.0f;
+				sw->year = sw->gps_data.year;
+				sw->month = sw->gps_data.month;
+				sw->day = sw->gps_data.day;
+				sw->hour = sw->gps_data.hour;
+				sw->minute = sw->gps_data.min;
+				sw->second = sw->gps_data.sec;
+				sw->gps_fix_valid = 1;
+			}
+			else
+			{
+				sw->gps_fix_valid = 0;
+			}
 
-                // go back to state 0 and schedule next request in 1 s
-                sw->gnss_state           = 0;
-                sw->gnss_nextRequestTick = now + 1000;
-            }
-            break;
-    }
+			// go back to state 0 and schedule next request in 1 s
+			sw->gnss_state = 0;
+			sw->gnss_nextRequestTick = now + 1000;
+		}
+		break;
+	}
 }
 
 void Sensor_MPU6500_read_data(SmartWatchData_t *SmartWatchData_handle)
@@ -265,11 +275,12 @@ void Sensor_BMP280_init(BMP280_HandleTypedef *bmp280)
 	bmp280->addr = BMP280_I2C_ADDRESS_0;
 	bmp280->i2c = &BME280_I2C;
 
-    // 3) try to initialize until the chip acks
-    while (!bmp280_init(bmp280, &bmp280->params)) {
-        // Optional: blink an LED, print a message, delay, etc.
-        HAL_Delay(200);
-    }
+	// 3) try to initialize until the chip acks
+	while (!bmp280_init(bmp280, &bmp280->params))
+	{
+		// Optional: blink an LED, print a message, delay, etc.
+		HAL_Delay(200);
+	}
 //	bool bme280p = bmp280.id == BME280_CHIP_ID;
 //	size = sprintf((char*) Data, "BMP280: found %s \r\n",
 //			bme280p ? "BME280" : "BMP280");
@@ -382,8 +393,8 @@ void Sensor_MAX30102_configure_optimal_hr_spo2(max30102_t *obj,
 	max30102_set_led_pulse_width(obj, max30102_pw_16_bit);
 	max30102_set_adc_resolution(obj, max30102_adc_2048);
 	max30102_set_sampling_rate(obj, max30102_sr_800);
-	max30102_set_led_current_1(obj, 6.2);
-	max30102_set_led_current_2(obj, 6.2);
+	max30102_set_led_current_1(obj, 7.4);
+	max30102_set_led_current_2(obj, 7.4);
 
 	// Enter SpO2 mode
 	max30102_set_mode(obj, max30102_spo2);
@@ -411,84 +422,94 @@ void Sensor_MAX30102_configure_optimal_hr_spo2(max30102_t *obj,
 }
 
 // helper: AC/DC on a buffer of uint32_t
-static void _calc_acdc_N(const uint32_t *buf, int num_samples_to_process, float *ac, float *dc)
+void _calc_acdc_N(const uint32_t *buf, int num_samples_to_process, float *ac,
+		float *dc)
 {
-    if (num_samples_to_process == 0) {
-        *ac = 0.0f; *dc = 0.0f;
-        return;
-    }
-    uint32_t mx = buf[0], mn = buf[0];
-    uint64_t sum = buf[0]; // Initialize sum with the first element
-    for (int i = 1; i < num_samples_to_process; i++) // Loop from 1 to num_samples_to_process
-    {
-        uint32_t v = buf[i];
-        if (v > mx) mx = v;
-        if (v < mn) mn = v;
-        sum += v;
-    }
-    *ac = (float)(mx - mn);
-    *dc = (float)sum / num_samples_to_process;
+	if (num_samples_to_process == 0)
+	{
+		*ac = 0.0f;
+		*dc = 0.0f;
+		return;
+	}
+	uint32_t mx = buf[0], mn = buf[0];
+	uint64_t sum = buf[0]; // Initialize sum with the first element
+	for (int i = 1; i < num_samples_to_process; i++) // Loop from 1 to num_samples_to_process
+	{
+		uint32_t v = buf[i];
+		if (v > mx)
+			mx = v;
+		if (v < mn)
+			mn = v;
+		sum += v;
+	}
+	*ac = (float) (mx - mn);
+	*dc = (float) sum / num_samples_to_process;
 }
 
 // very crude peak‐count on IR
-static uint8_t _detect_MAX30102_hr_N(const uint32_t *ir_buf, int num_samples_to_process)
+uint8_t _detect_MAX30102_hr_N(const uint32_t *ir_buf,
+		int num_samples_to_process)
 {
-    // MAX30102_fs is the global effective sample rate
-    if (num_samples_to_process < 3 || MAX30102_fs < 1.0f) { // Need at least 3 samples for peak detection logic
-        return 0;
-    }
+	// MAX30102_fs is the global effective sample rate
+	if (num_samples_to_process < 3 || MAX30102_fs < 1.0f)
+	{ // Need at least 3 samples for peak detection logic
+		return 0;
+	}
 
-    uint32_t mx = ir_buf[0], mn = ir_buf[0];
-    for (int i = 1; i < num_samples_to_process; i++)
-    {
-        if (ir_buf[i] > mx) mx = ir_buf[i];
-        if (ir_buf[i] < mn) mn = ir_buf[i];
-    }
+	uint32_t mx = ir_buf[0], mn = ir_buf[0];
+	for (int i = 1; i < num_samples_to_process; i++)
+	{
+		if (ir_buf[i] > mx)
+			mx = ir_buf[i];
+		if (ir_buf[i] < mn)
+			mn = ir_buf[i];
+	}
 
-    // Print for debugging this specific function call
-    // printf("HR_N: mx=%lu, mn=%lu, num_samples=%d, fs=%.1f\n", mx, mn, num_samples_to_process, MAX30102_fs);
+	// Print for debugging this specific function call
+	// printf("HR_N: mx=%lu, mn=%lu, num_samples=%d, fs=%.1f\n", mx, mn, num_samples_to_process, MAX30102_fs);
 
-    if (mx == mn) { // Flat line or all same values
-        // printf("HR_N: Flat line (mx==mn), peaks=0\n");
-        return 0;
-    }
+	if (mx == mn)
+	{ // Flat line or all same values
+		// printf("HR_N: Flat line (mx==mn), peaks=0\n");
+		return 0;
+	}
 
-    float threshold = (mx + mn) * 0.5f;
-    int peaks = 0;
-    for (int i = 1; i < num_samples_to_process - 1; i++) // Iterate up to one before the last
-    {
-        if (ir_buf[i] > threshold && ir_buf[i - 1] <= threshold) {
-            peaks++;
-        }
-    }
+	float threshold = (mx + mn) * 0.5f;
+	int peaks = 0;
+	for (int i = 1; i < num_samples_to_process - 1; i++) // Iterate up to one before the last
+	{
+		if (ir_buf[i] > threshold && ir_buf[i - 1] <= threshold)
+		{
+			peaks++;
+		}
+	}
 
-    // printf("HR_N: threshold=%.1f, peaks_found=%d\n", threshold, peaks);
+	// printf("HR_N: threshold=%.1f, peaks_found=%d\n", threshold, peaks);
 
-    float window_sec = (float)num_samples_to_process / MAX30102_fs;
-    if (window_sec < 0.1f) { // Avoid division by zero or too short window for meaningful BPM
-        // printf("HR_N: Window too short (%.2f s), returning 0 BPM\n", window_sec);
-        return 0;
-    }
+	float window_sec = (float) num_samples_to_process / MAX30102_fs;
+	if (window_sec < 0.1f)
+	{ // Avoid division by zero or too short window for meaningful BPM
+		// printf("HR_N: Window too short (%.2f s), returning 0 BPM\n", window_sec);
+		return 0;
+	}
 
-    uint8_t bpm = (uint8_t)((peaks * 60.0f) / window_sec);
-    // printf("HR_N: Calculated BPM = %u (before sanity check)\n", bpm);
+	uint8_t bpm = (uint8_t) ((peaks * 60.0f) / window_sec);
+	// printf("HR_N: Calculated BPM = %u (before sanity check)\n", bpm);
 
-    return (bpm > 30 && bpm < 240) ? bpm : 0; // Basic sanity check
+	return (bpm > 30 && bpm < 240) ? bpm : 0; // Basic sanity check
 }
 
 void Sensor_MAX30102_init(max30102_t *obj, I2C_HandleTypeDef *hi2c) // Removed sampling_rate_hz parameter
 {
-    MAX30102_fs = MAX30102_RAW_SAMPLING_RATE / MAX30102_AVERAGING_FACTOR;
-    printf("DEBUG: Effective MAX30102_fs set to: %.2f Hz\r\n", MAX30102_fs);
+	MAX30102_fs = MAX30102_RAW_SAMPLING_RATE / MAX30102_AVERAGING_FACTOR;
+	printf("DEBUG: Effective MAX30102_fs set to: %.2f Hz\r\n", MAX30102_fs);
 
-    last_MAX30102_hr = 0;
-    last_MAX30102_spo2 = 0;
-    app_buffer_fill_count = 0;
+	last_MAX30102_hr = 0;
+	last_MAX30102_spo2 = 0;
+	app_buffer_fill_count = 0;
 
-    Sensor_MAX30102_configure_optimal_hr_spo2(obj, hi2c);
+	Sensor_MAX30102_configure_optimal_hr_spo2(obj, hi2c);
 }
-
-
 
 uint8_t Sensor_MAX30102_get_hr(void)
 {

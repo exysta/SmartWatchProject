@@ -143,8 +143,7 @@ int main(void)
 		uint32_t err;
 		for (uint16_t addr = 1; addr < 128; addr++)
 		{
-			status = HAL_I2C_IsDeviceReady(hi2c, addr << 1, 3,
-			500);
+			status = HAL_I2C_IsDeviceReady(hi2c, addr << 1, 3, 500);
 			if (status == HAL_OK)
 			{
 				printf("I2C: device ACK at 0x%02X\r\n", addr);
@@ -204,7 +203,7 @@ int main(void)
 #ifdef SCREEN_TEST
 	SmartWatchScreen_State = SCREEN_ENVIRONMENTAL;
 	Display_Init(SmartWatchScreen_State);
-
+	ST7789_Test();
 #endif
 
 #ifdef MAX30102_TEST
@@ -256,6 +255,9 @@ int main(void)
 	Sensor_MAX30102_init(&SmartWatchData_handle.max30102, &MAX30102_I2C);
 
 #endif
+//	Scan_I2C_Bus(&MAX30102_I2C);
+	uint32_t Timer = HAL_GetTick();
+	Sensor_SmartWatch_init(&SmartWatchData_handle);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -324,17 +326,14 @@ int main(void)
 
 #ifdef SCREEN_TEST
 
-//	    for (int i = 0; i < 100; ++i) {
-//	    	SmartWatchData_handle.pressure = 100.0f + 10.0f * (i % 5); // 100, 110, 120, 130, 140, repeat
-//	    	HAL_Delay(80);
-//	    }
-//		SmartWatchData_handle.pressure += 1;
-//		SmartWatchData_handle.heart_rate += 1;
-//		SmartWatchData_handle.spo2 += 1;
-//		SmartWatchScreen_State = SCREEN_HEART_RATE;
-//	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
+		SmartWatchData_handle.pressure += 1;
+		SmartWatchData_handle.heart_rate += 1;
+		SmartWatchData_handle.spo2 += 1;
+		SmartWatchScreen_State = SCREEN_HEART_RATE;
+
+	    Display_Update(SmartWatchScreen_State, &SmartWatchData_handle);
 //	    HAL_Delay(20);
-		//Display_EnvironnementData(30,70,&SmartWatchData_handle);
+//		Display_EnvironnementData(30,70,&SmartWatchData_handle);
 #endif
 
 #ifdef MAX30102_TEST
@@ -355,7 +354,20 @@ int main(void)
 //	    }
 
 #endif
+		if (messageReady)
+		{
+			// Process the complete message
+			printf("Received complete message: %s\r\n", messageBuffer);
+			messageReady = 0;
+		}
 
+		Sensor_SmartWatch_update(&SmartWatchData_handle);
+
+		if ((HAL_GetTick() - Timer) > 1000)
+		{
+			Sensor_SmartWatch_log(&SmartWatchData_handle);
+			Timer = HAL_GetTick();
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
